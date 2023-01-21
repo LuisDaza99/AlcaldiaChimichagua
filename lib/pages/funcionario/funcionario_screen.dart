@@ -1,14 +1,21 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:alcaldia/utils/auth_helper.dart';
 
 //nuevo para imagenes
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/src/snackbar/snackbar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:date_format/date_format.dart';
 
 import 'package:alcaldia/interfazUsuario/diseño_interfaz_app_theme.dart';
 import 'package:alcaldia/model/funcionario.dart';
+
+import '../../utils/auth_helper2.dart';
 
 File image;
 String filename;
@@ -23,10 +30,16 @@ class FuncionarioScreen extends StatefulWidget {
 
 final funcionarioReference =
     FirebaseDatabase.instance.reference().child('funcionario');
+final FirebaseFirestore _db = FirebaseFirestore.instance;
 
 class _FuncionarioScreenState extends State<FuncionarioScreen> {
-  var _currentSelectedDate;
   DateTime picked;
+  String cargoController;
+  String areaController;
+  String roleController;
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+ 
 
   void _pickDateDialog() async {
     picked = await showDatePicker(
@@ -51,6 +64,9 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
   TextEditingController _cargoController;
   TextEditingController _areaController;
   TextEditingController _fechanacimientoController;
+  TextEditingController _emailController;
+  TextEditingController _passwordController;
+  TextEditingController _telefonoController;
 
   //nuevo imagen
   String funcionarioImage;
@@ -100,6 +116,16 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
 
     funcionarioImage = widget.funcionario.funcionarioImage;
     print(funcionarioImage);
+
+    _emailController =
+        new TextEditingController(text: widget.funcionario.email);
+    _passwordController =
+        new TextEditingController(text: widget.funcionario.password);
+
+        _telefonoController =
+        new TextEditingController(text: widget.funcionario.telefono);
+
+  
   }
 
   @override
@@ -177,13 +203,119 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                     padding: EdgeInsets.only(top: 8.0),
                   ),
                   Divider(),
-                  Divider(),
                   TextField(
-                    controller: _areaController,
+                    controller: _emailController,
                     style: TextStyle(
                         fontSize: 17.0, color: Colors.deepOrangeAccent),
                     decoration: InputDecoration(
-                        icon: Icon(Icons.add_task_outlined), labelText: 'Area'),
+                        icon: Icon(Icons.person), labelText: 'Email'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                  ),
+                  Divider(),
+                  TextField(
+                    controller: _passwordController,
+                    style: TextStyle(
+                        fontSize: 17.0, color: Colors.deepOrangeAccent),
+                    decoration: InputDecoration(
+                        icon: Icon(Icons.assignment), labelText: 'Password'),
+                  ),
+                  TextField(
+                     keyboardType: TextInputType.number,
+                    controller: _telefonoController,
+                    style: TextStyle(
+                        fontSize: 17.0, color: Colors.deepOrangeAccent),
+                    decoration: InputDecoration(
+                        icon: Icon(Icons.person), labelText: 'telefono'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                  ),
+                  Divider(),
+                  Container(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 35.0, vertical: 0.0),
+                      child: DropdownButtonFormField(
+                        value: cargoController,
+                        items: ['Jefe', 'Secretario']
+                            .map((label) => DropdownMenuItem(
+                                  child: Text(label.toString()),
+                                  value: label,
+                                ))
+                            .toList(),
+                        hint: Text('Cargo'),
+                        onChanged: (value) {
+                          setState(() {
+                            cargoController = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                  ),
+                  Divider(),
+                  Container(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 35.0, vertical: 0.0),
+                      child: DropdownButtonFormField(
+                        value: areaController,
+                        items: [
+                          'Secretaria de hacienda',
+                          'Regimen subsidiado',
+                          'Secretariia de planeacion',
+                          'Comisaria de familia',
+                          'Adulto mayor',
+                          'Desarrollo comunitario',
+                          'Oficina juridica',
+                          'Recaudo y Tesoreria',
+                          'Sisben',
+                          'Secretaria de servicios sociales',
+                          'Secretaria de gobierno',
+                          'Familia en accion'
+                        ]
+                            .map((label) => DropdownMenuItem(
+                                  child: Text(label.toString()),
+                                  value: label,
+                                ))
+                            .toList(),
+                        hint: Text('Area'),
+                        onChanged: (value) {
+                          setState(() {
+                            areaController = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 1.0),
+                  ),
+                  Divider(),
+                  Container(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 35.0, vertical: 0.0),
+                      child: DropdownButtonFormField(
+                        value: roleController,
+                        items: ['funcionario', 'admin', 'user']
+                            .map((label) => DropdownMenuItem(
+                                  child: Text(label.toString()),
+                                  value: label,
+                                ))
+                            .toList(),
+                        hint: Text('Rol y permisos'),
+                        onChanged: (value) {
+                          setState(() {
+                            roleController = value;
+                          });
+                        },
+                      ),
+                    ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 1.0),
@@ -207,8 +339,9 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                   ),
                   Divider(),
                   TextButton(
-                      onPressed: () {
+                      onPressed: () async {
                         //nuevo imagen
+
                         if (widget.funcionario.id != null) {
                           var fullImageName =
                               '${_identificacionController.text}' + '.jpg';
@@ -228,14 +361,33 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                               .set({
                             'nombre': _nombreController.text,
                             'identificacion': _identificacionController.text,
-                            'cargo': _cargoController.text,
-                            'area': _areaController.text,
+                            'email': _emailController.text,
+                            'password': _passwordController.text,
+                            'cargo': cargoController,
+                            'area': areaController,
+                            'role': roleController,
                             'fechanacimiento': _fechanacimientoController.text,
                             'FuncionarioImage': '$fullPathImage'
                           }).then((_) {
                             image = null;
                             Navigator.pop(context);
                           });
+
+                          if (_emailController.text.isEmpty ||
+                              _passwordController.text.isEmpty) {
+                            print("Email and password cannot be empty");
+                            return;
+                          }
+                          try {
+                            final user = await Auth2Helper.signupWithEmail(
+                                email: _emailController.text,
+                                password: _passwordController.text);
+                            if (user != null) {
+                              print("Usuario Creado");
+                            }
+                          } catch (e) {
+                            print(e);
+                          }
                         } else {
                           //nuevo imagen
 
@@ -255,14 +407,33 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                           funcionarioReference.push().set({
                             'nombre': _nombreController.text,
                             'identificacion': _identificacionController.text,
-                            'cargo': _cargoController.text,
-                            'area': _areaController.text,
+                            'email': _emailController.text,
+                            'password': _passwordController.text,
+                            'cargo': cargoController,
+                            'area': areaController,
+                            'role': roleController,
                             'fechanacimiento': _fechanacimientoController.text,
                             'FuncionarioImage': '$fullPathImage' //nuevo imagen
                           }).then((_) {
                             image = null;
                             Navigator.pop(context);
                           });
+
+                          if (_emailController.text.isEmpty ||
+                              _passwordController.text.isEmpty) {
+                            print("Email and password cannot be empty");
+                            return;
+                          }
+                          try {
+                            final user = await Auth2Helper.signupWithEmail(
+                                email: _emailController.text,
+                                password: _passwordController.text);
+                            if (user != null) {
+                              print("Usuario Creado");
+                            }
+                          } catch (e) {
+                            print(e);
+                          }
                         }
                       },
                       style: TextButton.styleFrom(

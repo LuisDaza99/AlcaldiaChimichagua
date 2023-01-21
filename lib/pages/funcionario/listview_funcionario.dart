@@ -222,7 +222,7 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario> {
       context,
       MaterialPageRoute(
           builder: (context) =>
-              FuncionarioScreen(Funcionario(null, '', '', '', '', '', ''))),
+              FuncionarioScreen(Funcionario(null, '', '', '', '', '', '', '','','',''))),
     );
   }
 }

@@ -1,45 +1,31 @@
-import 'dart:io';
 
-import 'package:alcaldia/pages/funcionario/funcionario_information.dart';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:device_info/device_info.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:alcaldia/model/funcionario.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:package_info/package_info.dart';
 
-
-class AuthHelper {
+class Auth2Helper {
   static FirebaseAuth _auth = FirebaseAuth.instance;
- 
 
-
+  Auth2Helper(this.funcionario);
+  final Funcionario funcionario;
 
   static signInWithEmail({String email, String password}) async {
-    final res = await _auth.signInWithEmailAndPassword(
+    await _auth.signInWithEmailAndPassword(
         email: email, password: password);
-    final User user = res.user;
-    return user;
+    
   }
 
   static signupWithEmail({String email, String password}) async {
-    final res = await _auth.createUserWithEmailAndPassword(
+    await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
-    final User user = res.user;
-    return user;
+    
+   
   }
 
-  static signInWithGoogle() async {
-    GoogleSignIn googleSignIn = GoogleSignIn();
-    final acc = await googleSignIn.signIn();
-    final auth = await acc.authentication;
-    final credential = GoogleAuthProvider.credential(
-        accessToken: auth.accessToken, idToken: auth.idToken);
-    final res = await _auth.signInWithCredential(credential);
-    return res.user;
-  }
 
   static logOut() {
     GoogleSignIn().signOut();
@@ -53,8 +39,8 @@ class AuthHelper {
   }
 }
 
-class UserHelper {
-  static FirebaseFirestore _db = FirebaseFirestore.instance;
+class User2Helper {
+  static FirebaseFirestore _dbfuncio = FirebaseFirestore.instance;
 
   static saveUser(User user) async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -68,14 +54,14 @@ class UserHelper {
       "role": "user",
       "build_number": buildNumber,
     };
-    final userRef = _db.collection("users").doc(user.uid);
+    final userRef = _dbfuncio.collection("users").doc(user.uid);
     if ((await userRef.get()).exists) {
       await userRef.update({
         "last_login": user.metadata.lastSignInTime.millisecondsSinceEpoch,
         "build_number": buildNumber,
       });
     } else {
-      await _db.collection("users").doc(user.uid).set(userData);
+      await _dbfuncio.collection("funcionarios").doc(user.uid).set(userData);
     }
     await _saveDevice(user);
   }
@@ -105,7 +91,7 @@ class UserHelper {
       };
     }
     final nowMS = DateTime.now().toUtc().millisecondsSinceEpoch;
-    final deviceRef = _db
+    final deviceRef = _dbfuncio
         .collection("users")
         .doc(user.uid)
         .collection("devices")
