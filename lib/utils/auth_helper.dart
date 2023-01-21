@@ -1,13 +1,17 @@
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:alcaldia/pages/funcionario/funcionario_information.dart';
+import 'package:alcaldia/model/funcionario.dart';
+import 'package:alcaldia/ui/pages/funcionario/funcionario_information.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:device_info/device_info.dart';
+import 'package:logger/logger.dart';
 import 'package:package_info/package_info.dart';
 
 class AuthHelper {
@@ -20,12 +24,13 @@ class AuthHelper {
     return user;
   }
 
-  static signupWithEmail({String email, String password,String rol='user'}) async {
+  static signupWithEmail(
+      {String email, String password, String rol = 'user'}) async {
     final res = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
     final User user = res.user;
     if (user != null) {
-      UserHelper.saveUser(user,rol: rol);
+      UserHelper.saveUser(user, rol: rol);
     }
     return user;
   }
@@ -52,8 +57,55 @@ class AuthHelper {
 
 class UserHelper {
   static FirebaseFirestore _db = FirebaseFirestore.instance;
+  static var _dbRT = FirebaseDatabase.instance.reference();
 
-  static saveUser(User user,{String rol='user'}) async {
+  Future<List<Funcionario>> loadUser() async {
+    CollectionReference productos =
+        FirebaseFirestore.instance.collection('users');
+    QuerySnapshot querySnapshot;
+
+    querySnapshot = await productos.get();
+
+    var documents = querySnapshot.docs;
+    List<Funcionario> funcionarioList = [];
+    documents.forEach(
+      (element) {
+        log('message');
+        Funcionario funcionario = Funcionario.map(element);
+        funcionarioList.add(funcionario);
+      },
+    );
+
+    return funcionarioList;
+  }
+
+  Future<void> eliminarFuncionario(String id) async {
+    CollectionReference funcionarios =
+        FirebaseFirestore.instance.collection('users');
+
+    return funcionarios
+        .doc(id)
+        .delete()
+        .then((value) => print("User Deleted"))
+        .catchError((error) => print("Failed to delete user: $error"));
+  }
+
+  static searchUser(String email, String password) async {
+    final correoRef = await _db
+        .collection("users")
+        .doc('${email.toLowerCase().trim()}')
+        .get();
+
+    var valor = Funcionario.fromMap(correoRef.data());
+
+    Logger().i('Valor: ${valor.email}');
+    if (correoRef.exists) {
+      AuthHelper.signupWithEmail(
+          email: email.toLowerCase().trim(), password: password, rol: valor.role);
+    }
+  }
+
+  static saveUser(User user, {String rol = 'user'}) async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     int buildNumber = int.parse(packageInfo.buildNumber);
 
@@ -65,7 +117,7 @@ class UserHelper {
       "role": rol,
       "build_number": buildNumber,
     };
-    final userRef = _db.collection("users").doc(user.uid);
+    final userRef = _db.collection("users").doc(user.email);
     if ((await userRef.get()).exists) {
       await userRef.update({
         "last_login": user.metadata.lastSignInTime.millisecondsSinceEpoch,

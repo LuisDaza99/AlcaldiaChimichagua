@@ -9,11 +9,11 @@ import 'package:alcaldia/components/featuredcard.dart';
 import 'package:alcaldia/components/alcaldiadependencia.dart';
 import 'package:alcaldia/constants/colors.dart';
 import 'package:alcaldia/theme.dart';
-import 'package:alcaldia/views/HomePage/components/featurelist.dart';
-import 'package:alcaldia/views/HomePage/state/homepageScrollListner.dart';
-import 'package:alcaldia/views/HomePage/state/homepageStateProvider.dart';
+import 'package:alcaldia/ui/views/HomePage/components/featurelist.dart';
+import 'package:alcaldia/ui/views/HomePage/state/homepageScrollListner.dart';
+import 'package:alcaldia/ui/views/HomePage/state/homepageStateProvider.dart';
 
-import '../../utils/auth_helper.dart';
+import '../../../utils/auth_helper.dart';
 
 class HomePageUsuario extends StatefulWidget {
   @override

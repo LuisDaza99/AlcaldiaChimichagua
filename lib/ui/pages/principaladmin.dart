@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_builder.dart';
 import 'package:get/get.dart';
 
-import '../utils/auth_helper.dart';
+import '../../utils/auth_helper.dart';
 
 class PrincipalAdmin extends StatelessWidget {
   @override

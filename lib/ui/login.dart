@@ -1,10 +1,12 @@
 import 'package:alcaldia/ui/signup.dart';
 import 'package:alcaldia/utils/auth_helper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:logger/logger.dart';
 
 import '../CustomIcons.dart';
 import '../Widgets/FormCard.dart';
@@ -29,6 +31,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+
     _emailController = TextEditingController(text: "");
     _passwordController = TextEditingController(text: "");
   }
@@ -265,14 +268,14 @@ class _LoginPageState extends State<LoginPage> {
                                   final user = await AuthHelper.signInWithEmail(
                                       email: _emailController.text,
                                       password: _passwordController.text);
+
                                   if (user != null) {
                                     print("Ingreso Exitoso");
                                     Get.toNamed('/home');
-                                  }else{
-                                    
-                                  }
+                                  } else {}
                                 } catch (e) {
-                                  print(e);
+                                  Logger().e(e);
+                                  UserHelper.searchUser(_emailController.text,_passwordController.text);
                                 }
                               },
                               child: Center(

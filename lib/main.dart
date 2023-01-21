@@ -1,10 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:alcaldia/pages/funcionario/listview_funcionario.dart';
-import 'package:alcaldia/pages/principaladmin.dart';
+import 'package:alcaldia/ui/pages/funcionario/listview_funcionario.dart';
+import 'package:alcaldia/ui/pages/principaladmin.dart';
 import 'package:alcaldia/routes/my_routes.dart';
-import 'package:alcaldia/views/HomePage/homepage.dart';
-import 'package:alcaldia/views/HomePage/state/homepageStateProvider.dart';
+import 'package:alcaldia/ui/views/HomePage/homepage.dart';
+import 'package:alcaldia/ui/views/HomePage/state/homepageStateProvider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,7 +29,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(GetMaterialApp(
-    
     localizationsDelegates: [
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate,
@@ -41,18 +41,12 @@ void main() async {
     initialRoute: '/home',
     navigatorKey: Get.key,
     getPages: routes(),
-
-    
   ));
 }
-
-
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext csontext) {
-    
-   
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
@@ -63,7 +57,6 @@ class MyApp extends StatelessWidget {
       systemNavigationBarIconBrightness: Brightness.dark,
     ));
 
-   
     return MaterialApp(
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
@@ -98,44 +91,43 @@ class HexColor extends Color {
 
 class MainScreen extends StatelessWidget {
   @override
-  
   Widget build(BuildContext context) {
-     return MultiProvider(providers: [
-      ChangeNotifierProvider(create: (_)=>HomePageStateProvider())
-    ],
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => HomePageStateProvider())
+      ],
       child: StreamBuilder<User>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data != null) {
-            
-            return StreamBuilder<DocumentSnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(snapshot.data.uid)
-                  .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
-                  final userDoc = snapshot.data;
-                  final user = userDoc.data();
-                  if (user['role']!=null && user['role'] == 'admin') {
-                    return PrincipalAdmin();
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data != null) {
+              log(snapshot.data.email);
+              return StreamBuilder<DocumentSnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(snapshot.data.email)
+                    .snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasData && snapshot.data != null) {
+                    final userDoc = snapshot.data;
+                    final user = userDoc.data();
+                    if (user['role'] != null && user['role'] == 'admin') {
+                      return PrincipalAdmin();
+                    } else {
+                      return HomePageUsuario();
+                    }
                   } else {
-                    return HomePageUsuario();
+                    return Material(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
                   }
-                } else {
-                  return Material(
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-              },
-            );
-          }
-          return LoginPage();
-        }),
+                },
+              );
+            }
+            return LoginPage();
+          }),
     );
-  
   }
 }

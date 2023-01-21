@@ -8,7 +8,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../utils/auth_helper.dart';
-import '../views/HomePage/state/homepageScrollListner.dart';
+import '../ui/views/HomePage/state/homepageScrollListner.dart';
 
 class Calendario extends StatefulWidget {
   @override

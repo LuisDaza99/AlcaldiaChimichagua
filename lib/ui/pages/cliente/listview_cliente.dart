@@ -7,8 +7,8 @@ import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:alcaldia/model/cliente.dart';
-import 'package:alcaldia/pages/cliente/cliente_information.dart';
-import 'package:alcaldia/pages/cliente/cliente_screen.dart';
+import 'package:alcaldia/ui/pages/cliente/cliente_information.dart';
+import 'package:alcaldia/ui/pages/cliente/cliente_screen.dart';
 import 'package:logger/logger.dart';
 import 'package:colombia_holidays/colombia_holidays.dart';
 

@@ -1,11 +1,11 @@
 import 'package:alcaldia/components/MAPS/Google_maps.dart';
 import 'package:alcaldia/main.dart';
-import 'package:alcaldia/pages/cliente/listview_cliente.dart';
-import 'package:alcaldia/pages/funcionario/listview_funcionario.dart';
-import 'package:alcaldia/pages/principaladmin.dart';
+import 'package:alcaldia/ui/pages/cliente/listview_cliente.dart';
+import 'package:alcaldia/ui/pages/funcionario/listview_funcionario.dart';
+import 'package:alcaldia/ui/pages/principaladmin.dart';
 import 'package:alcaldia/ui/home.dart';
 import 'package:alcaldia/ui/login.dart';
-import 'package:alcaldia/views/ViewDetails/viewDetails.dart';
+import 'package:alcaldia/ui/views/ViewDetails/viewDetails.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 
 import '../Widgets/Calendario.dart';
@@ -13,7 +13,7 @@ import '../components/MiMunicipio/Mi_municipio.dart';
 import '../components/Nalcaldia/Nalcaldia.dart';
 import '../components/Nalcaldia/Nalcaldia2.dart';
 import '../components/Simbolos/simbolos.dart';
-import '../views/HomePage/homepage.dart';
+import '../ui/views/HomePage/homepage.dart';
 
 routes() => [
       GetPage(name: "/home", page: () => MainScreen()),

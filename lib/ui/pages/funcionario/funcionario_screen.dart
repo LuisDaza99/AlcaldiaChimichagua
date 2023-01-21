@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,7 @@ import 'package:date_format/date_format.dart';
 import 'package:alcaldia/interfazUsuario/diseño_interfaz_app_theme.dart';
 import 'package:alcaldia/model/funcionario.dart';
 
-import '../../utils/auth_helper2.dart';
+import '../../../utils/auth_helper2.dart';
 
 File image;
 String filename;
@@ -344,99 +346,11 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                     TextButton(
                         onPressed: () async {
                           //nuevo imagen
-                          final funcionarioReference = FirebaseDatabase.instance
-                              .reference()
-                              .child('funcionario/${_emailController.text.toLowerCase()}');
-                          if (widget.funcionario.id != null) {
-                            var fullImageName =
-                                '${_identificacionController.text}' + '.jpg';
-
-                            final Reference ref = FirebaseStorage.instance
-                                .ref()
-                                .child('/Funcionarios/$fullImageName');
-                            final UploadTask task = ref.putFile(image);
-
-                            var part1 =
-                                'https://firebasestorage.googleapis.com/v0/b/alcaldiapp-e9da6.appspot.com/o/Funcionarios%2Fuser2.jpg?alt=media&token=39c258f1-feae-43fa-b89e-de16b9513ffc';
-
-                            var fullPathImage = part1 + fullImageName;
-
-                            funcionarioReference
-                                .child(widget.funcionario.id)
-                                .set({
-                              'nombre': _nombreController.text,
-                              'identificacion': _identificacionController.text,
-                              'email': _emailController.text.toLowerCase(),
-                              'password': _passwordController.text,
-                              'cargo': cargoController,
-                              'area': areaController,
-                              'role': roleController,
-                              'fechanacimiento':
-                                  _fechanacimientoController.text,
-                              'FuncionarioImage': '$fullPathImage'
-                            }).then((_) {
-                              image = null;
-                              Navigator.pop(context);
-                            });
-
-                            if (_emailController.text.isEmpty ||
-                                _passwordController.text.isEmpty) {
-                              print("Email and password cannot be empty");
-                              return;
-                            }
-                            try {} catch (e) {
-                              print(e);
-                            }
-                          } else {
-                            //nuevo imagen
-
-                            var fullImageName =
-                                '${_identificacionController.text}' + '.jpg';
-
-                            final Reference ref = FirebaseStorage.instance
-                                .ref()
-                                .child('/Funcionarios/$fullImageName');
-                            final UploadTask task = ref.putFile(image);
-
-                            var part1 =
-                                'https://firebasestorage.googleapis.com/v0/b/alcaldiapp-e9da6.appspot.com/o/Funcionarios%2F${_identificacionController.text}.jpg?alt=media&token=39c258f1-feae-43fa-b89e-de16b9513ffc';
-
-                            var fullPathImage = part1 + fullImageName;
-
-                            funcionarioReference.push().set({
-                              'nombre': _nombreController.text,
-                              'identificacion': _identificacionController.text,
-                              'email': _emailController.text,
-                              'password': _passwordController.text,
-                              'cargo': cargoController,
-                              'area': areaController,
-                              'role': roleController,
-                              'fechanacimiento':
-                                  _fechanacimientoController.text,
-                              'FuncionarioImage':
-                                  '$fullPathImage' //nuevo imagen
-                            }).then((_) {
-                              image = null;
-                              Navigator.pop(context);
-                            });
-
-                            if (_emailController.text.isEmpty ||
-                                _passwordController.text.isEmpty) {
-                              print("Email and password cannot be empty");
-                              return;
-                            }
-                            try {
-                              final user = await AuthHelper.signupWithEmail(
-                                  email: _emailController.text,
-                                  password: _passwordController.text,
-                                  rol: roleController.toLowerCase());
-                              if (user != null) {
-                                print("Usuario Creado");
-                              }
-                            } catch (e) {
-                              print(e);
-                            }
-                          }
+                          final funcionarioReference = await FirebaseFirestore
+                              .instance
+                              .collection('users')
+                              .doc(_emailController.text.toLowerCase());
+                          _registrarFuncionario(funcionarioReference);
                         },
                         style: TextButton.styleFrom(
                             foregroundColor: Color.fromARGB(255, 255, 255, 255),
@@ -476,5 +390,36 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
         ),
       ]),
     );
+  }
+
+  _registrarFuncionario(DocumentReference funcionarioReference) {
+    var fullImageName = '${_identificacionController.text}' + '.jpg';
+
+    final Reference ref =
+        FirebaseStorage.instance.ref().child('/Funcionarios/$fullImageName');
+    final UploadTask task = ref.putFile(image);
+
+    var part1 =
+        'https://firebasestorage.googleapis.com/v0/b/alcaldiapp-e9da6.appspot.com/o/Funcionarios%2F${_identificacionController.text}.jpg?alt=media&token=39c258f1-feae-43fa-b89e-de16b9513ffc';
+
+    var fullPathImage = part1 + fullImageName;
+
+    if (_emailController.text.isNotEmpty) {
+      funcionarioReference.set({
+        'nombre': _nombreController.text,
+        'identificacion': _identificacionController.text,
+        'email': _emailController.text.toLowerCase(),
+        'password': _passwordController.text,
+        'cargo': cargoController,
+        'area': areaController,
+        'role': roleController,
+        'fechanacimiento': _fechanacimientoController.text,
+        'FuncionarioImage': '$fullPathImage'
+      }).then((_) {
+        image = null;
+        log('lol');
+        Navigator.pop(context);
+      });
+    }
   }
 }

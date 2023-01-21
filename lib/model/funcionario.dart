@@ -27,7 +27,7 @@ class Funcionario {
       this._funcionarioImage);
 
   Funcionario.map(dynamic obj) {
-    this._nombre = obj['nombre'];
+    this._nombre = (obj['nombre']);
     this._identificacion = obj['identificacion'];
     this._email = obj['email'];
     this._password = obj['password'];
@@ -37,6 +37,22 @@ class Funcionario {
     this._role = obj['role'];
     this._fechanacimiento = obj['fechanacimiento'];
     this._funcionarioImage = obj['FuncionarioImage'];
+  }
+
+ factory Funcionario.fromMap(Map<String, dynamic> map) {
+    return Funcionario(
+      map['id'],
+      map['nombre'],
+      map['identificacion'],
+      map['email'],
+      map['password'],
+      map['telefono'],
+      map['cargo'],
+      map['area'],
+      map['role'],
+      map['fechanacimiento'],
+      map['funcionarioimage']
+    );
   }
 
   String get id => _id;
@@ -51,17 +67,5 @@ class Funcionario {
   String get fechanacimiento => _fechanacimiento;
   String get funcionarioImage => _funcionarioImage;
 
-  Funcionario.fromSnapShot(DataSnapshot snapshot) {
-    _id = snapshot.key;
-    _nombre = snapshot.value['nombre'];
-    _identificacion = snapshot.value['identificacion'];
-    _email = snapshot.value['email'];
-    _password = snapshot.value['password'];
-    _telefono = snapshot.value['telefono'];
-    _cargo = snapshot.value['cargo'];
-    _area = snapshot.value['area'];
-    _role = snapshot.value['role'];
-    _fechanacimiento = snapshot.value['fechanacimiento'];
-    _funcionarioImage = snapshot.value['FuncionarioImage'];
-  }
+  
 }

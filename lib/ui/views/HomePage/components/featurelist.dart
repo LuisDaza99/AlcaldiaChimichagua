@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:alcaldia/theme.dart';
-import 'package:alcaldia/views/HomePage/state/homepageStateProvider.dart';
+import 'package:alcaldia/ui/views/HomePage/state/homepageStateProvider.dart';
 
 class TopFeaturedList extends StatefulWidget {
   @override
