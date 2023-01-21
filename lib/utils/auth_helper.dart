@@ -25,12 +25,15 @@ class AuthHelper {
   }
 
   static signupWithEmail(
-      {String email, String password, String rol = 'user'}) async {
+      {String email, String password, String rol = 'user',bool estaRegistrado=false}) async {
     final res = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
     final User user = res.user;
     if (user != null) {
-      UserHelper.saveUser(user, rol: rol);
+      if(!estaRegistrado){
+        UserHelper.saveUser(user, rol: rol);
+      }
+      
     }
     return user;
   }
@@ -72,7 +75,10 @@ class UserHelper {
       (element) {
         log('message');
         Funcionario funcionario = Funcionario.map(element);
-        funcionarioList.add(funcionario);
+        if(!(funcionario.role.contains('user'))){
+          funcionarioList.add(funcionario);
+        }
+        
       },
     );
 
@@ -90,8 +96,11 @@ class UserHelper {
         .catchError((error) => print("Failed to delete user: $error"));
   }
 
+  
+
   static searchUser(String email, String password) async {
-    final correoRef = await _db
+    try {
+      final correoRef = await _db
         .collection("users")
         .doc('${email.toLowerCase().trim()}')
         .get();
@@ -99,17 +108,31 @@ class UserHelper {
     var valor = Funcionario.fromMap(correoRef.data());
 
     Logger().i('Valor: ${valor.email}');
-    if (correoRef.exists) {
+    if (valor!=null||valor.email.isNotEmpty) {
       AuthHelper.signupWithEmail(
-          email: email.toLowerCase().trim(), password: password, rol: valor.role);
+          email: email.toLowerCase().trim(), password: password, rol: valor.role,estaRegistrado: true);
     }
+    } catch (e) {
+      Logger().e('Error: ${e}');
+    }
+    
   }
 
   static saveUser(User user, {String rol = 'user'}) async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     int buildNumber = int.parse(packageInfo.buildNumber);
 
+     
+
     Map<String, dynamic> userData = {
+      "FuncionarioImage": "",
+      "fechanacimiento": "",
+      "area": "",
+      "telefono": "",
+      "cargo": "",
+      "password": "",
+      "identificacion": "",
+      "nombre": user.displayName,
       "name": user.displayName,
       "email": user.email,
       "last_login": user.metadata.lastSignInTime.millisecondsSinceEpoch,
@@ -124,7 +147,7 @@ class UserHelper {
         "build_number": buildNumber,
       });
     } else {
-      await _db.collection("users").doc(user.uid).set(userData);
+      await _db.collection("users").doc(user.email).set(userData);
     }
     await _saveDevice(user);
   }

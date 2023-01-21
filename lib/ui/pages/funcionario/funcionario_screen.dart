@@ -167,7 +167,7 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                           padding: new EdgeInsets.all(5.0),
                           child: image == null
                               ? Image.asset('assets/diseño_interfaz/user2.jpg')
-                              : Image.file(image),
+                              : Image.file(image,fit: BoxFit.cover,),
                         ),
 
                         Divider(),
@@ -413,6 +413,7 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
         'cargo': cargoController,
         'area': areaController,
         'role': roleController,
+        'telefono': "",
         'fechanacimiento': _fechanacimientoController.text,
         'FuncionarioImage': '$fullPathImage'
       }).then((_) {

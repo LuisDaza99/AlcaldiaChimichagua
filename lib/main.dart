@@ -111,10 +111,13 @@ class MainScreen extends StatelessWidget {
                   if (snapshot.hasData && snapshot.data != null) {
                     final userDoc = snapshot.data;
                     final user = userDoc.data();
-                    if (user['role'] != null && user['role'] == 'admin') {
-                      return PrincipalAdmin();
-                    } else {
-                      return HomePageUsuario();
+                    if (user['role'] != null) {}
+                    switch (user['role']) {
+                      case 'admin':
+                        return PrincipalAdmin();
+                        break;
+                      default:
+                        return HomePageUsuario();
                     }
                   } else {
                     return Material(

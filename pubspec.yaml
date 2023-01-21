@@ -47,6 +47,13 @@ dependencies:
       sdk: flutter
   shared_preferences: ^2.0.15
   provider: ^6.0.5
+  auto_size_text: ^3.0.0
+  url_launcher: ^6.0.5
+  timeago: ^3.3.0
+  json_path: ^0.4.2
+  page_transition: ^2.0.9
+  substring_highlight: ^1.0.33
+  from_css_color: ^2.0.0
  
   
 
