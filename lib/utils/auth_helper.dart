@@ -180,7 +180,7 @@ class UserHelper {
     final nowMS = DateTime.now().toUtc().millisecondsSinceEpoch;
     final deviceRef = _db
         .collection("users")
-        .doc(user.uid)
+        .doc(user.email)
         .collection("devices")
         .doc(deviceId);
     if ((await deviceRef.get()).exists) {
