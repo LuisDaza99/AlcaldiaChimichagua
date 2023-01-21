@@ -2,14 +2,24 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../../model/dependenciaModel.dart';
+
 
 class ViewDetails extends StatefulWidget {
+  final DependenciaModel dependencia;
+  const ViewDetails(
+      {Key key,
+      this.dependencia,})
+      : super(key: key);
   @override
-  _ViewDetailsState createState() => _ViewDetailsState();
+  _ViewDetailsState createState() => _ViewDetailsState(this.dependencia);
 }
 
 class _ViewDetailsState extends State<ViewDetails> {
   int numberPackage = 0;
+  DependenciaModel dependencia;
+  
+  _ViewDetailsState(this.dependencia);
 
   removePackage() {
     setState(() {
@@ -46,7 +56,7 @@ class _ViewDetailsState extends State<ViewDetails> {
               height: size.height * 0.7,
               color: Colors.grey,
               child: Image(
-                image: AssetImage('assets/image/pic1.jpg'),
+                image: AssetImage(dependencia.imgUrl),
                 fit: BoxFit.cover,
               ),
             ),
@@ -64,7 +74,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Mount Fuji", style: appTheme.textTheme.headline2),
+                    Text(dependencia.depTitulo, style: appTheme.textTheme.headline2),
                     SizedBox(height: 4),
                     Row(children: [
                       Icon(
@@ -73,7 +83,7 @@ class _ViewDetailsState extends State<ViewDetails> {
                       ),
                       SizedBox(width: 12),
                       Text(
-                        "Honshu, Japan",
+                        dependencia.depTitulo,
                         style: appTheme.textTheme.caption,
                       )
                     ]),

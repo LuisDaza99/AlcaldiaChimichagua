@@ -1,4 +1,5 @@
 import 'package:alcaldia/model/dependenciaModel.dart';
+import 'package:alcaldia/ui/views/ViewDetails/viewDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
@@ -154,8 +155,15 @@ class _HomePageUsuarioState extends State<HomePageUsuario> {
                                       crossAxisCount: 2),
                               itemBuilder: (context, index) {
                                 return GestureDetector(
-                                    onTap: () {
-                                      Navigator.pushNamed(context, "/view");
+                                    onTap: () async {
+                                     await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewDetails(
+                            dependencia: snapshot.data[index],
+                          ),
+                        ),
+                      );
                                     },
                                     child: areaCard(snapshot.data[index]));
                               });

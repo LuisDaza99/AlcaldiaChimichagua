@@ -7,8 +7,8 @@ class FFLocalFile {
     this.bytes,
   });
 
-  final String name;
-  final Uint8List bytes;
+  final String? name;
+  final Uint8List? bytes;
 
   @override
   String toString() => 'FFLocalFile(name: $name, bytes: ${bytes?.length ?? 0})';
