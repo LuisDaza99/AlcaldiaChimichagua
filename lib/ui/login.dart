@@ -143,6 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                                   fontFamily: "Poppins-Medium",
                                   fontSize: ScreenUtil().setSp(26))),
                           TextFormField(
+                            autocorrect: true,
                             decoration: InputDecoration(
                                 hintText: "Email",
                                 hintStyle: TextStyle(
@@ -162,22 +163,39 @@ class _LoginPageState extends State<LoginPage> {
                                   fontFamily: "Poppins-Medium",
                                   fontSize: ScreenUtil().setSp(26))),
                           TextFormField(
-                            controller: _passwordController,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9]')),
-                            ],
-                            decoration: InputDecoration(
-                                hintText: "Password",
-                                hintStyle: TextStyle(
-                                    color: Colors.grey, fontSize: 12.0)),
-                            validator: (String value) {
-                              if (value.isEmpty)
-                                return 'Por favor ingrese algún texto o números';
-                              return null;
-                            },
-                            obscureText: true,
-                          ),
+                              controller: _passwordController,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[0-9]')),
+                              ],
+                              decoration: InputDecoration(
+                                  hintText: "Password",
+                                  hintStyle: TextStyle(
+                                      color: Colors.grey, fontSize: 12.0)),
+                              validator: (String value) {
+                                if (value.isEmpty)
+                                  return 'Por favor ingrese algún texto o números';
+                                return null;
+                              },
+                              obscureText: true,
+                              onFieldSubmitted: (value) async {
+                                if (_emailController.text.isEmpty ||
+                                    _passwordController.text.isEmpty) {
+                                  print("Email and password cannot be empty");
+                                  return;
+                                }
+                                try {
+                                  final user = await AuthHelper.signInWithEmail(
+                                      email: _emailController.text,
+                                      password: _passwordController.text);
+                                  if (user != null) {
+                                    print("Ingreso Exitoso");
+                                    Get.toNamed('/home');
+                                  }
+                                } catch (e) {
+                                  print(e);
+                                }
+                              }),
                           SizedBox(
                             height: ScreenUtil().setHeight(35),
                           ),
@@ -249,6 +267,9 @@ class _LoginPageState extends State<LoginPage> {
                                       password: _passwordController.text);
                                   if (user != null) {
                                     print("Ingreso Exitoso");
+                                    Get.toNamed('/home');
+                                  }else{
+                                    
                                   }
                                 } catch (e) {
                                   print(e);

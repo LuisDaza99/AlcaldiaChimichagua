@@ -28,8 +28,6 @@ class FuncionarioScreen extends StatefulWidget {
   _FuncionarioScreenState createState() => _FuncionarioScreenState();
 }
 
-final funcionarioReference =
-    FirebaseDatabase.instance.reference().child('funcionario');
 final FirebaseFirestore _db = FirebaseFirestore.instance;
 
 class _FuncionarioScreenState extends State<FuncionarioScreen> {
@@ -39,7 +37,6 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
   String roleController;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
- 
 
   void _pickDateDialog() async {
     picked = await showDatePicker(
@@ -67,6 +64,8 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
   TextEditingController _emailController;
   TextEditingController _passwordController;
   TextEditingController _telefonoController;
+
+  double iconSize = 20;
 
   //nuevo imagen
   String funcionarioImage;
@@ -122,10 +121,8 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
     _passwordController =
         new TextEditingController(text: widget.funcionario.password);
 
-        _telefonoController =
+    _telefonoController =
         new TextEditingController(text: widget.funcionario.telefono);
-
-  
   }
 
   @override
@@ -154,298 +151,304 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             elevation: 10,
             child: Center(
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      new Container(
-                        height: 100.0,
-                        width: 100.0,
-                        decoration: new BoxDecoration(
-                            border: new Border.all(color: Colors.blueAccent)),
-                        padding: new EdgeInsets.all(5.0),
-                        child: image == null
-                            ? Image.asset('assets/diseño_interfaz/user2.jpg')
-                            : Image.file(image),
-                      ),
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        new Container(
+                          height: 100.0,
+                          width: 100.0,
+                          decoration: new BoxDecoration(
+                              border: new Border.all(color: Colors.blueAccent)),
+                          padding: new EdgeInsets.all(5.0),
+                          child: image == null
+                              ? Image.asset('assets/diseño_interfaz/user2.jpg')
+                              : Image.file(image),
+                        ),
 
-                      Divider(),
-                      //nuevo para llamar imagen de la galeria o capturarla con la camara
-                      new IconButton(
-                          icon: new Icon(Icons.camera_alt),
-                          onPressed: pickerCam),
-                      Divider(),
-                      new IconButton(
-                          icon: new Icon(Icons.image),
-                          onPressed: pickerGallery),
-                    ],
-                  ),
-                  TextField(
-                    controller: _nombreController,
-                    style: TextStyle(
-                        fontSize: 17.0, color: Colors.deepOrangeAccent),
-                    decoration: InputDecoration(
-                        icon: Icon(Icons.person), labelText: 'Nombre'),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 8.0),
-                  ),
-                  Divider(),
-                  TextField(
-                    controller: _identificacionController,
-                    style: TextStyle(
-                        fontSize: 17.0, color: Colors.deepOrangeAccent),
-                    decoration: InputDecoration(
-                        icon: Icon(Icons.assignment),
-                        labelText: 'Identificacion'),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 8.0),
-                  ),
-                  Divider(),
-                  TextField(
-                    controller: _emailController,
-                    style: TextStyle(
-                        fontSize: 17.0, color: Colors.deepOrangeAccent),
-                    decoration: InputDecoration(
-                        icon: Icon(Icons.person), labelText: 'Email'),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 8.0),
-                  ),
-                  Divider(),
-                  TextField(
-                    controller: _passwordController,
-                    style: TextStyle(
-                        fontSize: 17.0, color: Colors.deepOrangeAccent),
-                    decoration: InputDecoration(
-                        icon: Icon(Icons.assignment), labelText: 'Password'),
-                  ),
-                  TextField(
-                     keyboardType: TextInputType.number,
-                    controller: _telefonoController,
-                    style: TextStyle(
-                        fontSize: 17.0, color: Colors.deepOrangeAccent),
-                    decoration: InputDecoration(
-                        icon: Icon(Icons.person), labelText: 'telefono'),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 8.0),
-                  ),
-                  Divider(),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 35.0, vertical: 0.0),
-                      child: DropdownButtonFormField(
-                        value: cargoController,
-                        items: ['Jefe', 'Secretario']
-                            .map((label) => DropdownMenuItem(
-                                  child: Text(label.toString()),
-                                  value: label,
-                                ))
-                            .toList(),
-                        hint: Text('Cargo'),
-                        onChanged: (value) {
-                          setState(() {
-                            cargoController = value;
-                          });
-                        },
-                      ),
+                        Divider(),
+                        //nuevo para llamar imagen de la galeria o capturarla con la camara
+                        new IconButton(
+                            icon: new Icon(Icons.camera_alt),
+                            onPressed: pickerCam),
+                        Divider(),
+                        new IconButton(
+                            icon: new Icon(Icons.image),
+                            onPressed: pickerGallery),
+                      ],
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 8.0),
-                  ),
-                  Divider(),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 35.0, vertical: 0.0),
-                      child: DropdownButtonFormField(
-                        value: areaController,
-                        items: [
-                          'Secretaria de hacienda',
-                          'Regimen subsidiado',
-                          'Secretariia de planeacion',
-                          'Comisaria de familia',
-                          'Adulto mayor',
-                          'Desarrollo comunitario',
-                          'Oficina juridica',
-                          'Recaudo y Tesoreria',
-                          'Sisben',
-                          'Secretaria de servicios sociales',
-                          'Secretaria de gobierno',
-                          'Familia en accion'
-                        ]
-                            .map((label) => DropdownMenuItem(
-                                  child: Text(label.toString()),
-                                  value: label,
-                                ))
-                            .toList(),
-                        hint: Text('Area'),
-                        onChanged: (value) {
-                          setState(() {
-                            areaController = value;
-                          });
-                        },
+                    TextField(
+                      controller: _nombreController,
+                      style: TextStyle(
+                          fontSize: 17.0, color: Colors.deepOrangeAccent),
+                      decoration: InputDecoration(
+                          icon: Icon(
+                            Icons.person,
+                            size: 20,
+                          ),
+                          labelText: 'Nombre'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                    ),
+                    Divider(),
+                    TextField(
+                      controller: _identificacionController,
+                      style: TextStyle(
+                          fontSize: 17.0, color: Colors.deepOrangeAccent),
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.assignment),
+                          labelText: 'Identificacion'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                    ),
+                    Divider(),
+                    TextField(
+                      controller: _emailController,
+                      style: TextStyle(
+                          fontSize: 17.0, color: Colors.deepOrangeAccent),
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.person), labelText: 'Email'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                    ),
+                    Divider(),
+                    TextField(
+                      controller: _passwordController,
+                      style: TextStyle(
+                          fontSize: 17.0, color: Colors.deepOrangeAccent),
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.assignment), labelText: 'Password'),
+                    ),
+                    TextField(
+                      keyboardType: TextInputType.number,
+                      controller: _telefonoController,
+                      style: TextStyle(
+                          fontSize: 17.0, color: Colors.deepOrangeAccent),
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.person), labelText: 'telefono'),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                    ),
+                    Divider(),
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 35.0, vertical: 0.0),
+                        child: DropdownButtonFormField(
+                          value: cargoController,
+                          items: ['Jefe', 'Secretario']
+                              .map((label) => DropdownMenuItem(
+                                    child: Text(label.toString()),
+                                    value: label,
+                                  ))
+                              .toList(),
+                          hint: Text('Cargo'),
+                          onChanged: (value) {
+                            setState(() {
+                              cargoController = value;
+                            });
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 1.0),
-                  ),
-                  Divider(),
-                  Container(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 35.0, vertical: 0.0),
-                      child: DropdownButtonFormField(
-                        value: roleController,
-                        items: ['funcionario', 'admin', 'user']
-                            .map((label) => DropdownMenuItem(
-                                  child: Text(label.toString()),
-                                  value: label,
-                                ))
-                            .toList(),
-                        hint: Text('Rol y permisos'),
-                        onChanged: (value) {
-                          setState(() {
-                            roleController = value;
-                          });
-                        },
+                    Padding(
+                      padding: EdgeInsets.only(top: 8.0),
+                    ),
+                    Divider(),
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 35.0, vertical: 0.0),
+                        child: DropdownButtonFormField(
+                          value: areaController,
+                          items: [
+                            'Secretaria de hacienda',
+                            'Regimen subsidiado',
+                            'Secretariia de planeacion',
+                            'Comisaria de familia',
+                            'Adulto mayor',
+                            'Desarrollo comunitario',
+                            'Oficina juridica',
+                            'Recaudo y Tesoreria',
+                            'Sisben',
+                            'Secretaria de servicios sociales',
+                            'Secretaria de gobierno',
+                            'Familia en accion'
+                          ]
+                              .map((label) => DropdownMenuItem(
+                                    child: Text(label.toString()),
+                                    value: label,
+                                  ))
+                              .toList(),
+                          hint: Text('Area'),
+                          onChanged: (value) {
+                            setState(() {
+                              areaController = value;
+                            });
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 1.0),
-                  ),
-                  Divider(),
-                  TextField(
-                    onTap: () {
-                      _pickDateDialog();
-                    },
-                    controller: _fechanacimientoController,
-                    readOnly: true,
-                    style: TextStyle(
-                        fontSize: 17.0, color: Colors.deepOrangeAccent),
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.calendar_month_outlined),
-                      labelText: 'Fecha de nacimiento',
+                    Padding(
+                      padding: EdgeInsets.only(top: 1.0),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 1.0),
-                  ),
-                  Divider(),
-                  TextButton(
-                      onPressed: () async {
-                        //nuevo imagen
-
-                        if (widget.funcionario.id != null) {
-                          var fullImageName =
-                              '${_identificacionController.text}' + '.jpg';
-
-                          final Reference ref = FirebaseStorage.instance
-                              .ref()
-                              .child('/Funcionarios/$fullImageName');
-                          final UploadTask task = ref.putFile(image);
-
-                          var part1 =
-                              'https://firebasestorage.googleapis.com/v0/b/alcaldiapp-e9da6.appspot.com/o/Funcionarios%2Fuser2.jpg?alt=media&token=39c258f1-feae-43fa-b89e-de16b9513ffc';
-
-                          var fullPathImage = part1 + fullImageName;
-
-                          funcionarioReference
-                              .child(widget.funcionario.id)
-                              .set({
-                            'nombre': _nombreController.text,
-                            'identificacion': _identificacionController.text,
-                            'email': _emailController.text,
-                            'password': _passwordController.text,
-                            'cargo': cargoController,
-                            'area': areaController,
-                            'role': roleController,
-                            'fechanacimiento': _fechanacimientoController.text,
-                            'FuncionarioImage': '$fullPathImage'
-                          }).then((_) {
-                            image = null;
-                            Navigator.pop(context);
-                          });
-
-                          if (_emailController.text.isEmpty ||
-                              _passwordController.text.isEmpty) {
-                            print("Email and password cannot be empty");
-                            return;
-                          }
-                          try {
-                            final user = await Auth2Helper.signupWithEmail(
-                                email: _emailController.text,
-                                password: _passwordController.text);
-                            if (user != null) {
-                              print("Usuario Creado");
-                            }
-                          } catch (e) {
-                            print(e);
-                          }
-                        } else {
-                          //nuevo imagen
-
-                          var fullImageName =
-                              '${_identificacionController.text}' + '.jpg';
-
-                          final Reference ref = FirebaseStorage.instance
-                              .ref()
-                              .child('/Funcionarios/$fullImageName');
-                          final UploadTask task = ref.putFile(image);
-
-                          var part1 =
-                              'https://firebasestorage.googleapis.com/v0/b/alcaldiapp-e9da6.appspot.com/o/Funcionarios%2F${_identificacionController.text}.jpg?alt=media&token=39c258f1-feae-43fa-b89e-de16b9513ffc';
-
-                          var fullPathImage = part1 + fullImageName;
-
-                          funcionarioReference.push().set({
-                            'nombre': _nombreController.text,
-                            'identificacion': _identificacionController.text,
-                            'email': _emailController.text,
-                            'password': _passwordController.text,
-                            'cargo': cargoController,
-                            'area': areaController,
-                            'role': roleController,
-                            'fechanacimiento': _fechanacimientoController.text,
-                            'FuncionarioImage': '$fullPathImage' //nuevo imagen
-                          }).then((_) {
-                            image = null;
-                            Navigator.pop(context);
-                          });
-
-                          if (_emailController.text.isEmpty ||
-                              _passwordController.text.isEmpty) {
-                            print("Email and password cannot be empty");
-                            return;
-                          }
-                          try {
-                            final user = await Auth2Helper.signupWithEmail(
-                                email: _emailController.text,
-                                password: _passwordController.text);
-                            if (user != null) {
-                              print("Usuario Creado");
-                            }
-                          } catch (e) {
-                            print(e);
-                          }
-                        }
+                    Divider(),
+                    Container(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 35.0, vertical: 0.0),
+                        child: DropdownButtonFormField(
+                          value: roleController,
+                          items: ['funcionario', 'admin', 'user']
+                              .map((label) => DropdownMenuItem(
+                                    child: Text(label.toString()),
+                                    value: label,
+                                  ))
+                              .toList(),
+                          hint: Text('Rol y permisos'),
+                          onChanged: (value) {
+                            setState(() {
+                              roleController = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 1.0),
+                    ),
+                    Divider(),
+                    TextField(
+                      onTap: () {
+                        _pickDateDialog();
                       },
-                      style: TextButton.styleFrom(
-                          foregroundColor: Color.fromARGB(255, 255, 255, 255),
-                          elevation: 6,
-                          backgroundColor: Color.fromARGB(255, 96, 169, 214)),
-                      child: (widget.funcionario.id != null)
-                          ? Text('Update')
-                          : Text(
-                              'Agregar',
-                            )),
-                ],
+                      controller: _fechanacimientoController,
+                      readOnly: true,
+                      style: TextStyle(
+                          fontSize: 17.0, color: Colors.deepOrangeAccent),
+                      decoration: InputDecoration(
+                        icon: Icon(Icons.calendar_month_outlined),
+                        labelText: 'Fecha de nacimiento',
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 1.0),
+                    ),
+                    Divider(),
+                    TextButton(
+                        onPressed: () async {
+                          //nuevo imagen
+                          final funcionarioReference = FirebaseDatabase.instance
+                              .reference()
+                              .child('funcionario/${_emailController.text.toLowerCase()}');
+                          if (widget.funcionario.id != null) {
+                            var fullImageName =
+                                '${_identificacionController.text}' + '.jpg';
+
+                            final Reference ref = FirebaseStorage.instance
+                                .ref()
+                                .child('/Funcionarios/$fullImageName');
+                            final UploadTask task = ref.putFile(image);
+
+                            var part1 =
+                                'https://firebasestorage.googleapis.com/v0/b/alcaldiapp-e9da6.appspot.com/o/Funcionarios%2Fuser2.jpg?alt=media&token=39c258f1-feae-43fa-b89e-de16b9513ffc';
+
+                            var fullPathImage = part1 + fullImageName;
+
+                            funcionarioReference
+                                .child(widget.funcionario.id)
+                                .set({
+                              'nombre': _nombreController.text,
+                              'identificacion': _identificacionController.text,
+                              'email': _emailController.text.toLowerCase(),
+                              'password': _passwordController.text,
+                              'cargo': cargoController,
+                              'area': areaController,
+                              'role': roleController,
+                              'fechanacimiento':
+                                  _fechanacimientoController.text,
+                              'FuncionarioImage': '$fullPathImage'
+                            }).then((_) {
+                              image = null;
+                              Navigator.pop(context);
+                            });
+
+                            if (_emailController.text.isEmpty ||
+                                _passwordController.text.isEmpty) {
+                              print("Email and password cannot be empty");
+                              return;
+                            }
+                            try {} catch (e) {
+                              print(e);
+                            }
+                          } else {
+                            //nuevo imagen
+
+                            var fullImageName =
+                                '${_identificacionController.text}' + '.jpg';
+
+                            final Reference ref = FirebaseStorage.instance
+                                .ref()
+                                .child('/Funcionarios/$fullImageName');
+                            final UploadTask task = ref.putFile(image);
+
+                            var part1 =
+                                'https://firebasestorage.googleapis.com/v0/b/alcaldiapp-e9da6.appspot.com/o/Funcionarios%2F${_identificacionController.text}.jpg?alt=media&token=39c258f1-feae-43fa-b89e-de16b9513ffc';
+
+                            var fullPathImage = part1 + fullImageName;
+
+                            funcionarioReference.push().set({
+                              'nombre': _nombreController.text,
+                              'identificacion': _identificacionController.text,
+                              'email': _emailController.text,
+                              'password': _passwordController.text,
+                              'cargo': cargoController,
+                              'area': areaController,
+                              'role': roleController,
+                              'fechanacimiento':
+                                  _fechanacimientoController.text,
+                              'FuncionarioImage':
+                                  '$fullPathImage' //nuevo imagen
+                            }).then((_) {
+                              image = null;
+                              Navigator.pop(context);
+                            });
+
+                            if (_emailController.text.isEmpty ||
+                                _passwordController.text.isEmpty) {
+                              print("Email and password cannot be empty");
+                              return;
+                            }
+                            try {
+                              final user = await AuthHelper.signupWithEmail(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                  rol: roleController.toLowerCase());
+                              if (user != null) {
+                                print("Usuario Creado");
+                              }
+                            } catch (e) {
+                              print(e);
+                            }
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                            foregroundColor: Color.fromARGB(255, 255, 255, 255),
+                            elevation: 6,
+                            backgroundColor: Color.fromARGB(255, 96, 169, 214)),
+                        child: (widget.funcionario.id != null)
+                            ? Text('Update')
+                            : Text(
+                                'Agregar',
+                              )),
+                  ],
+                ),
               ),
             ),
           ),

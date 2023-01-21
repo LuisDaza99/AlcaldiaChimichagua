@@ -107,7 +107,7 @@ class MainScreen extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.data != null) {
-            UserHelper.saveUser(snapshot.data);
+            
             return StreamBuilder<DocumentSnapshot>(
               stream: FirebaseFirestore.instance
                   .collection("users")
@@ -118,7 +118,7 @@ class MainScreen extends StatelessWidget {
                 if (snapshot.hasData && snapshot.data != null) {
                   final userDoc = snapshot.data;
                   final user = userDoc.data();
-                  if (user['role'] == 'admin') {
+                  if (user['role']!=null && user['role'] == 'admin') {
                     return PrincipalAdmin();
                   } else {
                     return HomePageUsuario();

@@ -238,7 +238,7 @@ class _SignupPageState extends State<SignupPage> {
                                       password: _passwordController.text);
                                   if (user != null) {
                                     print("Usuario Creado");
-                                    Get.toNamed("/loginpage");
+                                    Navigator.pop(context);
                                   }
                                 } catch (e) {
                                   print(e);

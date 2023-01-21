@@ -22,7 +22,7 @@ class Auth2Helper {
   static signupWithEmail({String email, String password}) async {
     await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
-    
+
    
   }
 

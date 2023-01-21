@@ -1,5 +1,7 @@
 import 'package:alcaldia/utils/auth_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -17,6 +19,7 @@ class HomePage extends StatelessWidget {
               child: Text("Log out"),
               onPressed: () {
                 AuthHelper.logOut();
+                Get.toNamed("/loginpage");
               },
             )
           ],

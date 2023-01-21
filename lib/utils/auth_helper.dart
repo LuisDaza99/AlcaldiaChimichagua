@@ -10,12 +10,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:device_info/device_info.dart';
 import 'package:package_info/package_info.dart';
 
-
 class AuthHelper {
   static FirebaseAuth _auth = FirebaseAuth.instance;
- 
-
-
 
   static signInWithEmail({String email, String password}) async {
     final res = await _auth.signInWithEmailAndPassword(
@@ -24,10 +20,13 @@ class AuthHelper {
     return user;
   }
 
-  static signupWithEmail({String email, String password}) async {
+  static signupWithEmail({String email, String password,String rol='user'}) async {
     final res = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
     final User user = res.user;
+    if (user != null) {
+      UserHelper.saveUser(user,rol: rol);
+    }
     return user;
   }
 
@@ -47,16 +46,14 @@ class AuthHelper {
   }
 
   static handleSignOut() async {
-    
-      return await FirebaseAuth.instance.signOut();
-    
+    return await FirebaseAuth.instance.signOut();
   }
 }
 
 class UserHelper {
   static FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  static saveUser(User user) async {
+  static saveUser(User user,{String rol='user'}) async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     int buildNumber = int.parse(packageInfo.buildNumber);
 
@@ -65,7 +62,31 @@ class UserHelper {
       "email": user.email,
       "last_login": user.metadata.lastSignInTime.millisecondsSinceEpoch,
       "created_at": user.metadata.creationTime.millisecondsSinceEpoch,
-      "role": "user",
+      "role": rol,
+      "build_number": buildNumber,
+    };
+    final userRef = _db.collection("users").doc(user.uid);
+    if ((await userRef.get()).exists) {
+      await userRef.update({
+        "last_login": user.metadata.lastSignInTime.millisecondsSinceEpoch,
+        "build_number": buildNumber,
+      });
+    } else {
+      await _db.collection("users").doc(user.uid).set(userData);
+    }
+    await _saveDevice(user);
+  }
+
+  static saveUserAdmin(User user) async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    int buildNumber = int.parse(packageInfo.buildNumber);
+
+    Map<String, dynamic> userData = {
+      "name": user.displayName,
+      "email": user.email,
+      "last_login": user.metadata.lastSignInTime.millisecondsSinceEpoch,
+      "created_at": user.metadata.creationTime.millisecondsSinceEpoch,
+      "role": "admin",
       "build_number": buildNumber,
     };
     final userRef = _db.collection("users").doc(user.uid);
@@ -126,5 +147,3 @@ class UserHelper {
     }
   }
 }
-
-
