@@ -25,27 +25,39 @@ class AuthHelper {
   }
 
   static signupWithEmail(
-      {String email, String password, String rol = 'user',bool estaRegistrado=false}) async {
+      {String email,
+      String password,
+      String rol = 'user',
+      bool estaRegistrado = false}) async {
     final res = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
     final User user = res.user;
     if (user != null) {
-      if(!estaRegistrado){
+      if (!estaRegistrado) {
         UserHelper.saveUser(user, rol: rol);
       }
-      
     }
     return user;
   }
 
   static signInWithGoogle() async {
-    GoogleSignIn googleSignIn = GoogleSignIn();
-    final acc = await googleSignIn.signIn();
-    final auth = await acc.authentication;
-    final credential = GoogleAuthProvider.credential(
-        accessToken: auth.accessToken, idToken: auth.idToken);
-    final res = await _auth.signInWithCredential(credential);
-    return res.user;
+    try {
+      GoogleSignIn googleSignIn = GoogleSignIn();
+      final acc = await googleSignIn.signIn();
+      final auth = await acc.authentication;
+      Logger().v(auth.accessToken);
+      final credential = GoogleAuthProvider.credential(
+          accessToken: auth.accessToken, idToken: auth.idToken);
+      final res = await _auth.signInWithCredential(credential);
+       if (res.user != null) {
+        UserHelper.saveUser(res.user);
+       return res.user;
+    }
+    } on FirebaseException catch (e) {
+      Logger().e(e.message);
+    } catch (e) {
+      Logger().e(e);
+    }
   }
 
   static logOut() {
@@ -75,10 +87,9 @@ class UserHelper {
       (element) {
         log('message');
         Funcionario funcionario = Funcionario.map(element);
-        if(!(funcionario.role.contains('user'))){
+        if (!(funcionario.role.contains('user'))) {
           funcionarioList.add(funcionario);
         }
-        
       },
     );
 
@@ -96,33 +107,31 @@ class UserHelper {
         .catchError((error) => print("Failed to delete user: $error"));
   }
 
-  
-
   static searchUser(String email, String password) async {
     try {
       final correoRef = await _db
-        .collection("users")
-        .doc('${email.toLowerCase().trim()}')
-        .get();
+          .collection("users")
+          .doc('${email.toLowerCase().trim()}')
+          .get();
 
-    var valor = Funcionario.fromMap(correoRef.data());
+      var valor = Funcionario.fromMap(correoRef.data());
 
-    Logger().i('Valor: ${valor.email}');
-    if (valor!=null||valor.email.isNotEmpty) {
-      AuthHelper.signupWithEmail(
-          email: email.toLowerCase().trim(), password: password, rol: valor.role,estaRegistrado: true);
-    }
+      Logger().i('Valor: ${valor.email}');
+      if (valor != null || valor.email.isNotEmpty) {
+        AuthHelper.signupWithEmail(
+            email: email.toLowerCase().trim(),
+            password: password,
+            rol: valor.role,
+            estaRegistrado: true);
+      }
     } catch (e) {
       Logger().e('Error: ${e}');
     }
-    
   }
 
   static saveUser(User user, {String rol = 'user'}) async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     int buildNumber = int.parse(packageInfo.buildNumber);
-
-     
 
     Map<String, dynamic> userData = {
       "FuncionarioImage": "",
