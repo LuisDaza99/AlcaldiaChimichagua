@@ -10,16 +10,16 @@ class FFLocalizations {
   final Locale locale;
 
   static FFLocalizations of(BuildContext context) =>
-      Localizations.of<FFLocalizations>(context, FFLocalizations)!;
+      Localizations.of<FFLocalizations>(context, FFLocalizations);
 
   static List<String> languages() => ['es'];
 
-  static late SharedPreferences _prefs;
+  static  SharedPreferences _prefs;
   static Future initialize() async =>
       _prefs = await SharedPreferences.getInstance();
   static Future storeLocale(String locale) =>
       _prefs.setString(_kLocaleStorageKey, locale);
-  static Locale? getStoredLocale() {
+  static Locale getStoredLocale() {
     final locale = _prefs.getString(_kLocaleStorageKey);
     return locale != null && locale.isNotEmpty ? createLocale(locale) : null;
   }
@@ -33,7 +33,7 @@ class FFLocalizations {
       (kTranslationsMap[key] ?? {})[locale.toString()] ?? '';
 
   String getVariableText({
-    String? esText = '',
+    String esText = '',
   }) =>
       [esText][languageIndex] ?? '';
 }

@@ -8,8 +8,8 @@ enum AnimationTrigger {
 
 class AnimationInfo {
   AnimationInfo({
-    required this.trigger,
-    required this.effects,
+     this.trigger,
+     this.effects,
     this.loop = false,
     this.reverse = false,
     this.applyInitialState = true,
@@ -19,8 +19,8 @@ class AnimationInfo {
   final bool applyInitialState;
   final bool loop;
   final bool reverse;
-  late Adapter adapter;
-  late AnimationController controller;
+   Adapter adapter;
+   AnimationController controller;
 }
 
 void createAnimation(AnimationInfo animation, TickerProvider vsync) {
@@ -62,11 +62,11 @@ extension AnimatedWidgetExtension on Widget {
 
 class TiltEffect extends Effect<Offset> {
   const TiltEffect({
-    Duration? delay,
-    Duration? duration,
-    Curve? curve,
-    Offset? begin,
-    Offset? end,
+    Duration delay,
+    Duration duration,
+    Curve curve,
+    Offset begin,
+    Offset end,
   }) : super(
           delay: delay,
           duration: duration,

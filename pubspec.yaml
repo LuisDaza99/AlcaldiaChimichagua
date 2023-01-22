@@ -54,6 +54,8 @@ dependencies:
   page_transition: ^2.0.9
   substring_highlight: ^1.0.33
   from_css_color: ^2.0.0
+  flutter_animate: ^3.0.0
+  swipe_to: ^1.0.2
  
   
 
@@ -67,8 +69,8 @@ dependency_overrides:
     intl: ^0.17.0
     date_format: ^1.0.6
     day_night_time_picker: ^1.1.4
-    image_picker: ^0.5.0+3   
-   
+    image_picker: ^0.5.0+3
+    
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 # The following section is specific to Flutter.

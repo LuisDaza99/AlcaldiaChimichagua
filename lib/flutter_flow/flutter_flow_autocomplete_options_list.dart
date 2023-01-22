@@ -4,12 +4,12 @@ import 'package:substring_highlight/substring_highlight.dart';
 
 class AutocompleteOptionsList extends StatelessWidget {
   const AutocompleteOptionsList({
-    Key? key,
-    required this.textFieldKey,
-    required this.textController,
-    required this.options,
-    required this.onSelected,
-    required this.textStyle,
+    Key key,
+     this.textFieldKey,
+     this.textController,
+     this.options,
+     this.onSelected,
+     this.textStyle,
     this.textAlign = TextAlign.start,
     this.optionBackgroundColor,
     this.optionHighlightColor,
@@ -22,18 +22,18 @@ class AutocompleteOptionsList extends StatelessWidget {
   final TextEditingController textController;
   final List<String> options;
   final Function(String) onSelected;
-  final Color? optionHighlightColor;
-  final Color? optionBackgroundColor;
+  final Color optionHighlightColor;
+  final Color optionBackgroundColor;
   final TextStyle textStyle;
-  final TextStyle? textHighlightStyle;
+  final TextStyle textHighlightStyle;
   final TextAlign textAlign;
-  final double? maxHeight;
+  final double maxHeight;
   final double elevation;
 
   @override
   Widget build(BuildContext context) {
     final textFieldBox =
-        textFieldKey.currentContext!.findRenderObject() as RenderBox;
+        textFieldKey.currentContext.findRenderObject() as RenderBox;
     final textFieldWidth = textFieldBox.size.width;
     return Align(
       alignment: Alignment.topLeft,

@@ -11,8 +11,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../main.dart';
 
-
-
 export 'lat_lng.dart';
 export 'place.dart';
 export 'local_file.dart';
@@ -25,14 +23,14 @@ export 'package:cloud_firestore/cloud_firestore.dart'
 export 'package:page_transition/page_transition.dart';
 export 'internationalization.dart' show FFLocalizations;
 
-T valueOrDefault<T>(T? value, T defaultValue) =>
+T valueOrDefault<T>(T value, T defaultValue) =>
     (value is String && value.isEmpty) || value == null ? defaultValue : value;
 
 void _setTimeagoLocales() {
   timeago.setLocaleMessages('es', timeago.EsMessages());
 }
 
-String dateTimeFormat(String format, DateTime? dateTime, {String? locale}) {
+String dateTimeFormat(String format, DateTime dateTime, {String locale}) {
   if (dateTime == null) {
     return '';
   }
@@ -52,7 +50,7 @@ Future launchURL(String url) async {
   }
 }
 
-Color colorFromCssString(String color, {Color? defaultColor}) {
+Color colorFromCssString(String color, {Color defaultColor}) {
   try {
     return fromCssColor(color);
   } catch (_) {}
@@ -75,13 +73,13 @@ enum DecimalType {
 }
 
 String formatNumber(
-  num? value, {
-  required FormatType formatType,
-  DecimalType? decimalType,
-  String? currency,
+  num value, {
+  FormatType formatType,
+  DecimalType decimalType,
+  String currency,
   bool toLowerCase = false,
-  String? format,
-  String? locale,
+  String format,
+  String locale,
 }) {
   if (value == null) {
     return '';
@@ -89,7 +87,7 @@ String formatNumber(
   var formattedValue = '';
   switch (formatType) {
     case FormatType.decimal:
-      switch (decimalType!) {
+      switch (decimalType) {
         case DecimalType.automatic:
           formattedValue = NumberFormat.decimalPattern().format(value);
           break;
@@ -161,10 +159,10 @@ dynamic getJsonField(
   return isForList && value is! Iterable ? [value] : value;
 }
 
-Rect? getWidgetBoundingBox(BuildContext context) {
+Rect getWidgetBoundingBox(BuildContext context) {
   try {
-    final renderBox = context.findRenderObject() as RenderBox?;
-    return renderBox!.localToGlobal(Offset.zero) & renderBox.size;
+    final renderBox = context.findRenderObject() as RenderBox;
+    return renderBox.localToGlobal(Offset.zero) & renderBox.size;
   } catch (_) {
     return null;
   }
@@ -178,7 +176,7 @@ const kMobileWidthCutoff = 479.0;
 bool isMobileWidth(BuildContext context) =>
     MediaQuery.of(context).size.width < kMobileWidthCutoff;
 bool responsiveVisibility({
-  required BuildContext context,
+  BuildContext context,
   bool phone = true,
   bool tablet = true,
   bool tabletLandscape = true,
@@ -214,12 +212,6 @@ extension IterableExt<T> on Iterable<T> {
       .toList();
 }
 
-void setAppLanguage(BuildContext context, String language) =>
-    MyApp.of(context).setLocale(language);
-
-void setDarkModeSetting(BuildContext context, ThemeMode themeMode) =>
-    MyApp.of(context).setThemeMode(themeMode);
-
 void showSnackbar(
   BuildContext context,
   String message, {
@@ -251,12 +243,12 @@ void showSnackbar(
 }
 
 extension FFStringExt on String {
-  String maybeHandleOverflow({int? maxChars, String replacement = ''}) =>
+  String maybeHandleOverflow({int maxChars, String replacement = ''}) =>
       maxChars != null && length > maxChars
           ? replaceRange(maxChars, null, replacement)
           : this;
 }
 
-extension ListFilterExt<T> on Iterable<T?> {
-  List<T> get withoutNulls => where((s) => s != null).map((e) => e!).toList();
+extension ListFilterExt<T> on Iterable<T> {
+  List<T> get withoutNulls => where((s) => s != null).map((e) => e).toList();
 }
