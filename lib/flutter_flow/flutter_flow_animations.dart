@@ -34,7 +34,7 @@ void setupAnimations(Iterable<AnimationInfo> animations, TickerProvider vsync) {
 }
 
 extension AnimatedWidgetExtension on Widget {
-  Widget animateOnPageLoad(AnimationInfo animationInfo) => Animate(
+     Widget animateOnPageLoad(AnimationInfo animationInfo) => Animate(
       controller:
           animationInfo.applyInitialState ? null : animationInfo.controller,
       adapter: animationInfo.applyInitialState ? null : animationInfo.adapter,
