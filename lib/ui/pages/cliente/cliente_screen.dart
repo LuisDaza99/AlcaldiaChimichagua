@@ -21,6 +21,7 @@ class ClienteScreen extends StatefulWidget {
 final clienteReference = FirebaseDatabase.instance.reference().child('cliente');
 
 class _ClienteScreenState extends State<ClienteScreen> {
+  String areaEncargadaController;
   TimeOfDay _time = TimeOfDay.now().replacing(hour: 11, minute: 30);
   var _currentSelectedDate;
   DateTime picked;
@@ -64,10 +65,12 @@ class _ClienteScreenState extends State<ClienteScreen> {
 
   TextEditingController _nombreeController;
   TextEditingController _identificacionnController;
-  TextEditingController _areaaController;
+  TextEditingController _areaEncargadaController;
   TextEditingController _motivoController;
   TextEditingController _fechaController;
   TextEditingController _horaController;
+  final _formKey = GlobalKey<FormState>();
+
 
   //nuevo imagen
 
@@ -89,7 +92,7 @@ class _ClienteScreenState extends State<ClienteScreen> {
     _nombreeController = new TextEditingController(text: widget.cliente.nombre);
     _identificacionnController =
         new TextEditingController(text: widget.cliente.identificacion);
-    _areaaController = new TextEditingController(text: widget.cliente.areaa);
+    _areaEncargadaController = new TextEditingController(text: widget.cliente.area);
     _motivoController = new TextEditingController(text: widget.cliente.motivo);
     _fechaController = new TextEditingController(text: widget.cliente.fecha);
     _horaController = new TextEditingController(text: widget.cliente.hora);
@@ -146,14 +149,40 @@ class _ClienteScreenState extends State<ClienteScreen> {
                     padding: EdgeInsets.only(top: 8.0),
                   ),
                   Divider(),
-                  TextField(
-                    controller: _areaaController,
-                    style: TextStyle(
-                        fontSize: 17.0, color: Colors.deepOrangeAccent),
-                    decoration: InputDecoration(
-                        icon: Icon(Icons.assignment_ind_outlined),
-                        labelText: 'Area encargada'),
-                  ),
+                   Container(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 35.0, vertical: 0.0),
+                        child: DropdownButtonFormField(
+                          value: areaEncargadaController,
+                          items: [
+                            'Secretaria de hacienda',
+                            'Regimen subsidiado',
+                            'Secretariia de planeacion',
+                            'Comisaria de familia',
+                            'Adulto mayor',
+                            'Desarrollo comunitario',
+                            'Oficina juridica',
+                            'Recaudo y Tesoreria',
+                            'Sisben',
+                            'Secretaria de servicios sociales',
+                            'Secretaria de gobierno',
+                            'Familia en accion'
+                          ]
+                              .map((label) => DropdownMenuItem(
+                                    child: Text(label.toString()),
+                                    value: label,
+                                  ))
+                              .toList(),
+                          hint: Text('Area'),
+                          onChanged: (value) {
+                            setState(() {
+                              areaEncargadaController = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
                   Padding(
                     padding: EdgeInsets.only(top: 8.0),
                   ),
@@ -211,7 +240,7 @@ class _ClienteScreenState extends State<ClienteScreen> {
                           clienteReference.child(widget.cliente.id).set({
                             'nombre': _nombreeController.text,
                             'identificacion': _identificacionnController.text,
-                            'area encargada': _areaaController.text,
+                            'area encargada': areaEncargadaController,
                             'motivo': _motivoController.text,
                             'fecha': _fechaController.text,
                             'fechapicked': picked.millisecondsSinceEpoch,
@@ -225,7 +254,7 @@ class _ClienteScreenState extends State<ClienteScreen> {
                           clienteReference.push().set({
                             'nombre': _nombreeController.text,
                             'identificacion': _identificacionnController.text,
-                            'area encargada': _areaaController.text,
+                            'area encargada': areaEncargadaController,
                             'motivo': _motivoController.text,
                             'fecha': _fechaController.text,
                             'fechapicked': picked.millisecondsSinceEpoch,

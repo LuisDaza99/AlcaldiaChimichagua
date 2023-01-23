@@ -1,23 +1,16 @@
-import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:alcaldia/utils/auth_helper.dart';
-
-//nuevo para imagenes
-import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:get/get.dart';
-import 'package:get/get_navigation/src/snackbar/snackbar.dart';
+import 'package:flutter/material.dart';
+
+import 'package:google_fonts/google_fonts.dart';
+
+import '../../../flutter_flow/flutter_flow_drop_down.dart';
+import '../../../flutter_flow/flutter_flow_theme.dart';
+import '../../../flutter_flow/flutter_flow_widgets.dart';
+import '../../../model/funcionario.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:date_format/date_format.dart';
-
-import 'package:alcaldia/interfazUsuario/diseño_interfaz_app_theme.dart';
-import 'package:alcaldia/model/funcionario.dart';
-
-import '../../../utils/auth_helper2.dart';
 
 File image;
 String filename;
@@ -37,9 +30,9 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
   String cargoController;
   String areaController;
   String roleController;
+  String telefonoController;
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
   void _pickDateDialog() async {
     picked = await showDatePicker(
       context: context,
@@ -68,6 +61,8 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
   TextEditingController _telefonoController;
 
   double iconSize = 20;
+  String _urlImagen;
+  final _formKey = GlobalKey<FormState>();
 
   //nuevo imagen
   String funcionarioImage;
@@ -125,151 +120,360 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
 
     _telefonoController =
         new TextEditingController(text: widget.funcionario.telefono);
+    _urlImagen = widget.funcionario.funcionarioImage;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(fit: StackFit.expand, children: <Widget>[
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(left: 1.0, right: 60.0, bottom: 80.0),
-              child: Image.asset("assets/diseño_interfaz/funcio.png"),
-            ),
-            Expanded(
-              child: Container(),
-            ),
-            Image.asset("assets/image_02.png")
-          ],
+      backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+      appBar: AppBar(
+        backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+        automaticallyImplyLeading: false,
+        leading: InkWell(
+          onTap: () async {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.chevron_left_rounded,
+            color: FlutterFlowTheme.of(context).gray600,
+            size: 32,
+          ),
         ),
-        SingleChildScrollView(
-          //height: 570.0,
-
-          padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 130.0),
-          child: Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            elevation: 10,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: Column(
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        new Container(
-                          height: 100.0,
-                          width: 100.0,
-                          decoration: new BoxDecoration(
-                              border: new Border.all(color: Colors.blueAccent)),
-                          padding: new EdgeInsets.all(5.0),
-                          child: image == null
-                              ? Image.asset('assets/diseño_interfaz/user2.jpg')
-                              : Image.file(image,fit: BoxFit.cover,),
+        actions: [],
+        centerTitle: false,
+        elevation: 0,
+      ),
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 1,
+        decoration: BoxDecoration(),
+        child: Padding(
+          padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Container(
+                  width: 110,
+                  height: 110,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                        color: FlutterFlowTheme.of(context).primaryColor),
+                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: _decidirImagen()),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(0, 16, 0, 0),
+                      child: FFButtonWidget(
+                        onPressed: () {
+                          pickerGallery();
+                        },
+                        text: 'Subir Imagen',
+                        icon: Icon(
+                          Icons.photo,
+                          color: FlutterFlowTheme.of(context).primaryColor,
+                          size: 15,
                         ),
-
-                        Divider(),
-                        //nuevo para llamar imagen de la galeria o capturarla con la camara
-                        new IconButton(
-                            icon: new Icon(Icons.camera_alt),
-                            onPressed: pickerCam),
-                        Divider(),
-                        new IconButton(
-                            icon: new Icon(Icons.image),
-                            onPressed: pickerGallery),
-                      ],
-                    ),
-                    TextField(
-                      controller: _nombreController,
-                      style: TextStyle(
-                          fontSize: 17.0, color: Colors.deepOrangeAccent),
-                      decoration: InputDecoration(
-                          icon: Icon(
-                            Icons.person,
-                            size: 20,
+                        options: FFButtonOptions(
+                          height: 40,
+                          color: FlutterFlowTheme.of(context).primaryBackground,
+                          textStyle: FlutterFlowTheme.of(context).bodyText1,
+                          elevation: 2,
+                          borderSide: BorderSide(
+                            color: Colors.transparent,
+                            width: 1,
                           ),
-                          labelText: 'Nombre'),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 8.0),
+                      padding: EdgeInsetsDirectional.fromSTEB(0, 16, 0, 0),
+                      child: FFButtonWidget(
+                        onPressed: () {
+                          pickerCam();
+                        },
+                        text: 'Tomar Foto   ',
+                        icon: Icon(
+                          Icons.photo_camera,
+                          color: FlutterFlowTheme.of(context).primaryColor,
+                          size: 15,
+                        ),
+                        options: FFButtonOptions(
+                          height: 40,
+                          color: FlutterFlowTheme.of(context).primaryBackground,
+                          textStyle: FlutterFlowTheme.of(context).bodyText1,
+                          elevation: 2,
+                          borderSide: BorderSide(
+                            color: Colors.transparent,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                     ),
-                    Divider(),
-                    TextField(
-                      controller: _identificacionController,
-                      style: TextStyle(
-                          fontSize: 17.0, color: Colors.deepOrangeAccent),
-                      decoration: InputDecoration(
-                          icon: Icon(Icons.assignment),
-                          labelText: 'Identificacion'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8.0),
-                    ),
-                    Divider(),
-                    TextField(
-                      controller: _emailController,
-                      style: TextStyle(
-                          fontSize: 17.0, color: Colors.deepOrangeAccent),
-                      decoration: InputDecoration(
-                          icon: Icon(Icons.person), labelText: 'Email'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8.0),
-                    ),
-                    Divider(),
-                    TextField(
-                      controller: _passwordController,
-                      style: TextStyle(
-                          fontSize: 17.0, color: Colors.deepOrangeAccent),
-                      decoration: InputDecoration(
-                          icon: Icon(Icons.assignment), labelText: 'Password'),
-                    ),
-                    TextField(
-                      keyboardType: TextInputType.number,
-                      controller: _telefonoController,
-                      style: TextStyle(
-                          fontSize: 17.0, color: Colors.deepOrangeAccent),
-                      decoration: InputDecoration(
-                          icon: Icon(Icons.person), labelText: 'telefono'),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8.0),
-                    ),
-                    Divider(),
-                    Container(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 35.0, vertical: 0.0),
-                        child: DropdownButtonFormField(
-                          value: cargoController,
-                          items: ['Jefe', 'Secretario']
-                              .map((label) => DropdownMenuItem(
-                                    child: Text(label.toString()),
-                                    value: label,
-                                  ))
-                              .toList(),
-                          hint: Text('Cargo'),
+                  ],
+                ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
+                        child: TextFormField(
+                          validator: (true)
+                              ? (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'No deje este campo vacio';
+                                  }
+                                  return null;
+                                }
+                              : null,
+                          controller: _nombreController,
+                          obscureText: false,
+                          decoration: InputDecoration(
+                            labelText: 'Nombre',
+                            labelStyle: FlutterFlowTheme.of(context).bodyText2,
+                            hintText: 'Ingresa el nombre....',
+                            hintStyle: FlutterFlowTheme.of(context).bodyText2,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            filled: true,
+                            fillColor:
+                                FlutterFlowTheme.of(context).primaryBackground,
+                            contentPadding:
+                                EdgeInsetsDirectional.fromSTEB(20, 24, 20, 24),
+                            prefixIcon: Icon(
+                              Icons.person,
+                            ),
+                          ),
+                          style: FlutterFlowTheme.of(context).bodyText1,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
+                        child: TextFormField(
+                          controller: _emailController,
+                          obscureText: false,
+                          decoration: InputDecoration(
+                            labelText: 'Correo electrónico',
+                            labelStyle: FlutterFlowTheme.of(context).bodyText2,
+                            hintText: 'Ingrese el correo  electrónico...',
+                            hintStyle: FlutterFlowTheme.of(context).bodyText2,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            filled: true,
+                            fillColor:
+                                FlutterFlowTheme.of(context).primaryBackground,
+                            contentPadding:
+                                EdgeInsetsDirectional.fromSTEB(20, 24, 20, 24),
+                            prefixIcon: Icon(
+                              Icons.alternate_email,
+                              size: 21,
+                            ),
+                          ),
+                          style: FlutterFlowTheme.of(context).bodyText1,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
+                        child: TextFormField(
+                          maxLength: 10,
+                          controller: _identificacionController,
+                          obscureText: false,
+                          decoration: InputDecoration(
+                            labelText: 'Identificación',
+                            labelStyle: FlutterFlowTheme.of(context).bodyText2,
+                            hintText: 'Ingrese el número de identidad',
+                            hintStyle: FlutterFlowTheme.of(context).bodyText2,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            filled: true,
+                            fillColor:
+                                FlutterFlowTheme.of(context).primaryBackground,
+                            contentPadding:
+                                EdgeInsetsDirectional.fromSTEB(20, 24, 20, 24),
+                            prefixIcon: Icon(
+                              Icons.badge,
+                              size: 22,
+                            ),
+                          ),
+                          style: FlutterFlowTheme.of(context).bodyText1,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
+                        child: TextFormField(
+                          maxLength: 10,
+                          controller: _telefonoController,
+                          obscureText: false,
+                          decoration: InputDecoration(
+                            labelText: 'Teléfono',
+                            labelStyle: FlutterFlowTheme.of(context).bodyText2,
+                            hintText: 'Ingrese el número de Teléfono',
+                            hintStyle: FlutterFlowTheme.of(context).bodyText2,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            filled: true,
+                            fillColor:
+                                FlutterFlowTheme.of(context).primaryBackground,
+                            contentPadding:
+                                EdgeInsetsDirectional.fromSTEB(20, 24, 20, 24),
+                            prefixIcon: Icon(
+                              Icons.phone,
+                              size: 18,
+                            ),
+                          ),
+                          style: FlutterFlowTheme.of(context).bodyText1,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
+                        child: FlutterFlowDropDown<String>(
+                          options: ['Jefe', 'Secretario'],
                           onChanged: (value) {
                             setState(() {
                               cargoController = value;
                             });
                           },
+                          width: MediaQuery.of(context).size.width,
+                          height: 45,
+                          textStyle:
+                              FlutterFlowTheme.of(context).bodyText1.override(
+                                    fontFamily: 'Poppins',
+                                    color: Color.fromARGB(207, 0, 0, 0),
+                                  ),
+                          hintText: 'Seleccione el cargo...',
+                          fillColor: Color(0xFFF1F4F8),
+                          elevation: 2,
+                          borderColor: Colors.transparent,
+                          borderWidth: 0,
+                          borderRadius: 8,
+                          margin: EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
+                          hidesUnderline: true,
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 8.0),
-                    ),
-                    Divider(),
-                    Container(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 35.0, vertical: 0.0),
-                        child: DropdownButtonFormField(
-                          value: areaController,
-                          items: [
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
+                        child: FlutterFlowDropDown<String>(
+                          options: [
                             'Secretaria de hacienda',
                             'Regimen subsidiado',
                             'Secretariia de planeacion',
@@ -282,127 +486,166 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                             'Secretaria de servicios sociales',
                             'Secretaria de gobierno',
                             'Familia en accion'
-                          ]
-                              .map((label) => DropdownMenuItem(
-                                    child: Text(label.toString()),
-                                    value: label,
-                                  ))
-                              .toList(),
-                          hint: Text('Area'),
+                          ],
                           onChanged: (value) {
                             setState(() {
                               areaController = value;
                             });
                           },
+                          width: MediaQuery.of(context).size.width,
+                          height: 45,
+                          textStyle:
+                              FlutterFlowTheme.of(context).bodyText1.override(
+                                    fontFamily: 'Poppins',
+                                    color: Color.fromARGB(207, 0, 0, 0),
+                                  ),
+                          hintText: 'Seleccione el área...',
+                          fillColor: Color(0xFFF1F4F8),
+                          elevation: 2,
+                          borderColor: Colors.transparent,
+                          borderWidth: 0,
+                          borderRadius: 8,
+                          margin: EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
+                          hidesUnderline: true,
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 1.0),
-                    ),
-                    Divider(),
-                    Container(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 35.0, vertical: 0.0),
-                        child: DropdownButtonFormField(
-                          value: roleController,
-                          items: ['funcionario', 'admin', 'user']
-                              .map((label) => DropdownMenuItem(
-                                    child: Text(label.toString()),
-                                    value: label,
-                                  ))
-                              .toList(),
-                          hint: Text('Rol y permisos'),
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
+                        child: FlutterFlowDropDown<String>(
+                          options: ['funcionario', 'admin', 'user'],
                           onChanged: (value) {
                             setState(() {
                               roleController = value;
                             });
                           },
+                          width: MediaQuery.of(context).size.width,
+                          height: 45,
+                          textStyle:
+                              FlutterFlowTheme.of(context).bodyText1.override(
+                                    fontFamily: 'Poppins',
+                                    color: Color.fromARGB(207, 0, 0, 0),
+                                  ),
+                          hintText: 'Rol y permiso...',
+                          fillColor: Color(0xFFF1F4F8),
+                          elevation: 2,
+                          borderColor: Colors.transparent,
+                          borderWidth: 0,
+                          borderRadius: 8,
+                          margin: EdgeInsetsDirectional.fromSTEB(12, 4, 12, 4),
+                          hidesUnderline: true,
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 1.0),
-                    ),
-                    Divider(),
-                    TextField(
-                      onTap: () {
-                        _pickDateDialog();
-                      },
-                      controller: _fechanacimientoController,
-                      readOnly: true,
-                      style: TextStyle(
-                          fontSize: 17.0, color: Colors.deepOrangeAccent),
-                      decoration: InputDecoration(
-                        icon: Icon(Icons.calendar_month_outlined),
-                        labelText: 'Fecha de nacimiento',
+                      Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
+                        child: TextFormField(
+                          controller: _fechanacimientoController,
+                          readOnly: true,
+                          obscureText: false,
+                          onTap: () {
+                            _pickDateDialog();
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Fecha de nacimiento',
+                            labelStyle: FlutterFlowTheme.of(context).bodyText2,
+                            hintText: 'Selecione la fecha de Nacimiento...',
+                            hintStyle: FlutterFlowTheme.of(context).bodyText2,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0x00000000),
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            filled: true,
+                            fillColor:
+                                FlutterFlowTheme.of(context).primaryBackground,
+                          ),
+                          style: FlutterFlowTheme.of(context).bodyText1,
+                          maxLines: 1,
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 1.0),
-                    ),
-                    Divider(),
-                    TextButton(
-                        onPressed: () async {
-                          //nuevo imagen
-                          final funcionarioReference = await FirebaseFirestore
-                              .instance
-                              .collection('users')
-                              .doc(_emailController.text.toLowerCase());
-                          _registrarFuncionario(funcionarioReference);
-                        },
-                        style: TextButton.styleFrom(
-                            foregroundColor: Color.fromARGB(255, 255, 255, 255),
-                            elevation: 6,
-                            backgroundColor: Color.fromARGB(255, 96, 169, 214)),
-                        child: (widget.funcionario.id != null)
-                            ? Text('Update')
-                            : Text(
-                                'Agregar',
-                              )),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(0, 24, 0, 0),
+                  child: FFButtonWidget(
+                    onPressed: () async {
+                      //nuevo imagen
+                      if (_formKey.currentState.validate()) {
+                        final funcionarioReference = await FirebaseFirestore
+                            .instance
+                            .collection('users')
+                            .doc(_emailController.text.toLowerCase());
+                        _registrarFuncionario(funcionarioReference);
+                      }
+                    },
+                    text: 'AGREGAR',
+                    icon: Icon(
+                      Icons.person_add,
+                      size: 22,
+                    ),
+                    options: FFButtonOptions(
+                      width: 160,
+                      height: 45,
+                      color: FlutterFlowTheme.of(context).primaryColor,
+                      textStyle: TextStyle(
+                          color: FlutterFlowTheme.of(context).primaryBtnText),
+                      elevation: 3,
+                      borderSide: BorderSide(
+                        color: Colors.transparent,
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
-        Padding(
-          padding: EdgeInsets.only(left: 1.0, right: 360.0, bottom: 720.0),
-          child: SizedBox(
-            width: AppBar().preferredSize.height,
-            height: AppBar().preferredSize.height,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius:
-                    BorderRadius.circular(AppBar().preferredSize.height),
-                child: Icon(
-                  Icons.arrow_back_ios,
-                  color: InterfazAppTheme.nearlyBlack,
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ),
-        ),
-      ]),
+      ),
     );
   }
 
   _registrarFuncionario(DocumentReference funcionarioReference) {
-    var fullImageName = '${_identificacionController.text}' + '.jpg';
+    var fullPathImage;
+    try {
+      var fullImageName = '${_identificacionController.text}' + '.jpg';
 
-    final Reference ref =
-        FirebaseStorage.instance.ref().child('/Funcionarios/$fullImageName');
-    final UploadTask task = ref.putFile(image);
+      final Reference ref =
+          FirebaseStorage.instance.ref().child('/Funcionarios/$fullImageName');
+      final UploadTask task = ref.putFile(image);
 
-    var part1 =
-        'https://firebasestorage.googleapis.com/v0/b/alcaldiapp-e9da6.appspot.com/o/Funcionarios%2F${_identificacionController.text}.jpg?alt=media&token=39c258f1-feae-43fa-b89e-de16b9513ffc';
+      var part1 =
+          'https://firebasestorage.googleapis.com/v0/b/alcaldiapp-e9da6.appspot.com/o/Funcionarios%2F${_identificacionController.text}.jpg?alt=media&token=39c258f1-feae-43fa-b89e-de16b9513ffc';
 
-    var fullPathImage = part1 + fullImageName;
+      fullPathImage = part1 + fullImageName;
+    } catch (e) {
+      fullPathImage =
+          'https://firebasestorage.googleapis.com/v0/b/alcaldiapp-e9da6.appspot.com/o/Funcionarios%2FSinFoto%2Fuser.png?alt=media&token=c66046fc-1a49-4f0e-8136-d59d90500e4d';
+    }
 
     if (_emailController.text.isNotEmpty) {
       funcionarioReference.set({
@@ -413,14 +656,38 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
         'cargo': cargoController,
         'area': areaController,
         'role': roleController,
-        'telefono': "",
+        'telefono': _telefonoController.text,
         'fechanacimiento': _fechanacimientoController.text,
         'FuncionarioImage': '$fullPathImage'
       }).then((_) {
         image = null;
-        log('lol');
         Navigator.pop(context);
       });
+    }
+  }
+
+  Widget _decidirImagen() {
+    if (_urlImagen != null && _urlImagen.isNotEmpty) {
+      return Image.network(
+        _urlImagen,
+        width: 110,
+        height: 110,
+        fit: BoxFit.cover,
+      );
+    } else {
+      return image == null
+          ? Image.asset(
+              'assets/diseño_interfaz/user2.jpg',
+              width: 110,
+              height: 110,
+              fit: BoxFit.cover,
+            )
+          : Image.file(
+              image,
+              width: 110,
+              height: 110,
+              fit: BoxFit.cover,
+            );
     }
   }
 }

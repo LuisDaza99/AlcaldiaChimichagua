@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:alcaldia/ui/pages/FuncionarioPageAdmin.dart';
 import 'package:alcaldia/ui/pages/funcionario/listview_funcionario.dart';
 import 'package:alcaldia/ui/pages/principaladmin.dart';
 import 'package:alcaldia/routes/my_routes.dart';
@@ -113,8 +114,15 @@ class MainScreen extends StatelessWidget {
                     final user = userDoc.data();
                     if (user['role'] != null) {}
                     switch (user['role']) {
-                      case 'admin':
+                      case 'admin' :
                         return PrincipalAdmin();
+                        break;
+                      case 'user' :
+                        return HomePageUsuario();
+                        break;
+
+                      case 'funcionario':
+                        return FuncionarioPageAdmin();
                         break;
                       default:
                         return HomePageUsuario();

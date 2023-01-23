@@ -1,18 +1,29 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'dart:async';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:alcaldia/model/funcionario.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:alcaldia/model/cliente.dart';
 import 'package:alcaldia/ui/pages/cliente/cliente_information.dart';
 import 'package:alcaldia/ui/pages/cliente/cliente_screen.dart';
 import 'package:logger/logger.dart';
 import 'package:colombia_holidays/colombia_holidays.dart';
+import '../../../flutter_flow/flutter_flow_animations.dart';
+import '../../../flutter_flow/flutter_flow_icon_button.dart';
+import '../../../flutter_flow/flutter_flow_theme.dart';
+import '../../../flutter_flow/flutter_flow_util.dart';
+import 'package:flutter/material.dart';
+import 'package:swipe_to/swipe_to.dart';
+import 'dart:async';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:get/get.dart';
+import '../../../utils/auth_helper.dart';
+import 'cliente_information.dart';
+import 'cliente_screen.dart';
 
 class ListViewCliente extends StatefulWidget {
+  const ListViewCliente({Key key}) : super(key: key);
+
   @override
   _ListViewClienteState createState() => _ListViewClienteState();
 }
@@ -29,13 +40,44 @@ class _ListViewClienteState extends State<ListViewCliente>
   AnimationController _controller;
   DateRangePickerController _controllerDatePicker = DateRangePickerController();
   ColombiaHolidays holidays = ColombiaHolidays();
-
   DateTime fechaInicial;
   DateTime fechaFinal;
+
+  final animationsMap = {
+    'containerOnPageLoadAnimation': AnimationInfo(
+      trigger: AnimationTrigger.onPageLoad,
+      effects: [
+        VisibilityEffect(duration: 1.ms),
+        FadeEffect(
+          curve: Curves.easeInOut,
+          delay: 0.ms,
+          duration: 300.ms,
+          begin: 0,
+          end: 1,
+        ),
+        MoveEffect(
+          curve: Curves.easeInOut,
+          delay: 0.ms,
+          duration: 300.ms,
+          begin: Offset(0, 20),
+          end: Offset(0, 0),
+        ),
+      ],
+    ),
+  };
+  final _unfocusNode = FocusNode();
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  List<Funcionario> listaFuncionarios = [];
 
   @override
   void initState() {
     super.initState();
+    setupAnimations(
+      animationsMap.values.where((anim) =>
+          anim.trigger == AnimationTrigger.onActionTrigger ||
+          !anim.applyInitialState),
+      this,
+    );
     items = new List();
     _onClienteAddedSubscription =
         clienteReference.onChildAdded.listen(_onClienteAdded);
@@ -46,6 +88,7 @@ class _ListViewClienteState extends State<ListViewCliente>
 
   @override
   void dispose() {
+    _unfocusNode.dispose();
     super.dispose();
     _onClienteAddedSubscription.cancel();
     _onClienteChangedSubscription.cancel();
@@ -54,116 +97,316 @@ class _ListViewClienteState extends State<ListViewCliente>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 175, 203, 216),
-      appBar: AppBar(
-        title: Text('Todos los clientes atendidos'),
-        centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 38, 148, 192),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.filter_list),
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (BuildContext context) {
-                    return _datePickerRango(context, _controllerDatePicker);
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.fromLTRB(40, 0, 20, 80),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            AbsorbPointer(
+              absorbing: false,
+              child: FloatingActionButton(
+                child: Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+                backgroundColor: FlutterFlowTheme.of(context).primaryColor,
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ClienteScreen(
+                            Cliente(null, '', '', '', '', '', ''))),
+                  ).then((value) {
+                    setState(() {});
                   });
-            },
-          )
-        ],
-      ),
-      body: Center(
-        child: ListView.builder(
-            itemCount: items.length,
-            padding: EdgeInsets.only(top: 3.0),
-            itemBuilder: (context, position) {
-              return Column(
-                children: <Widget>[
-                  Divider(
-                    height: 1.0,
-                  ),
-                  Container(
-                    padding: new EdgeInsets.all(15.0),
-                    child: Card(
-                      elevation: 5,
-                      child: Row(
-                        children: <Widget>[
-                          //nuevo contador
-                          CircleAvatar(
-                            backgroundColor: Color.fromARGB(255, 175, 203, 216),
-                            radius: 17.0,
-                            child: Text(
-                              '${position + 1}',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 21.0,
-                              ),
-                            ),
-                          ),
-
-                          Expanded(
-                            child: ListTile(
-                                title: Text(
-                                  '${items[position].nombre}',
-                                  style: TextStyle(
-                                    color: Colors.blueAccent,
-                                    fontSize: 21.0,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  '${items[position].fecha}',
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 56, 52, 52),
-                                    fontSize: 21.0,
-                                  ),
-                                ),
-                                onTap: () => _navigateToClienteInformation(
-                                    context, items[position])),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                            ),
-                            onPressed: () => _showDialog(context, position),
-                          ),
-
-                          //onPressed: () => _deleteCliente(context, items[position],position)),
-                          IconButton(
-                              icon: Icon(
-                                Icons.remove_red_eye,
-                                color: Colors.blueAccent,
-                              ),
-                              onPressed: () =>
-                                  _navigateToCliente(context, items[position])),
-                        ],
-                      ),
-                      color: Colors.white,
-                    ),
-                  ),
-                  TextButton(
-                    child: Text("Regresar"),
-                    onPressed: () {
-                      Get.toNamed("/home");
-                    },
-                  )
-                ],
-              );
-            }),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
+                },
+              ),
+            )
+          ],
         ),
-        backgroundColor: Color.fromARGB(255, 38, 148, 192),
-        onPressed: () => _createNewCliente(context),
+      ),
+      key: scaffoldKey,
+      backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+      appBar: false
+          ? AppBar(
+              backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+              automaticallyImplyLeading: false,
+              title: Text(
+                'Page Title',
+                style: FlutterFlowTheme.of(context).title2.override(
+                      fontFamily: 'Poppins',
+                      color: FlutterFlowTheme.of(context).darkSeaGreen,
+                      fontSize: 22,
+                    ),
+              ),
+              actions: [],
+              centerTitle: false,
+              elevation: 2,
+            )
+          : null,
+      body: SafeArea(
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).requestFocus(_unfocusNode),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(0, 0, 16, 0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        16, 16, 0, 0),
+                                    child: Text(
+                                      'Clientes',
+                                      style:
+                                          FlutterFlowTheme.of(context).title1,
+                                    ),
+                                  ),
+                                  if (responsiveVisibility(
+                                    context: context,
+                                    tabletLandscape: false,
+                                    desktop: false,
+                                  ))
+                                    FlutterFlowIconButton(
+                                      borderColor: Colors.transparent,
+                                      borderRadius: 30,
+                                      borderWidth: 1,
+                                      buttonSize: 60,
+                                      icon: Icon(
+                                        Icons.filter_list,
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryText,
+                                        size: 30,
+                                      ),
+                                      onPressed: () {
+                                        showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (BuildContext context) {
+                                              return _datePickerRango(context,
+                                                  _controllerDatePicker);
+                                            });
+                                      },
+                                    ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(4, 0, 4, 0),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.94,
+                                decoration: BoxDecoration(),
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0, 0, 0, 24),
+                                  child: Container(
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryBackground,
+                                    ),
+                                    child: ListView.builder(
+                                      padding: EdgeInsets.zero,
+                                      scrollDirection: Axis.vertical,
+                                      itemCount: items.length,
+                                      itemBuilder:
+                                          (BuildContext context, position) {
+                                        return SwipeTo(
+                                          iconOnLeftSwipe: Icons.add,
+                                          iconOnRightSwipe: Icons.text_fields,
+                                          iconColor:
+                                              FlutterFlowTheme.of(context)
+                                                  .primaryColor,
+                                          onLeftSwipe: () async {},
+                                          onRightSwipe: () {},
+                                          child: Padding(
+                                            padding:
+                                                EdgeInsetsDirectional.fromSTEB(
+                                                    16, 8, 16, 0),
+                                            child: InkWell(
+                                              onTap: () => _navigateToCliente(
+                                                  context, items[position]),
+                                              onLongPress: () async {},
+                                              child: Container(
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryBackground,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      blurRadius: 3,
+                                                      color: Color(0x20000000),
+                                                      offset: Offset(0, 1),
+                                                    )
+                                                  ],
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: Padding(
+                                                  padding: EdgeInsetsDirectional
+                                                      .fromSTEB(8, 8, 12, 8),
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                        child: Text(
+                                                          '${position + 1}',
+                                                          style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 21.0,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  EdgeInsetsDirectional
+                                                                      .fromSTEB(
+                                                                          16,
+                                                                          0,
+                                                                          0,
+                                                                          0),
+                                                              child: Text(
+                                                                '${items[position].nombre}',
+                                                                style: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .subtitle1,
+                                                              ),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  EdgeInsetsDirectional
+                                                                      .fromSTEB(
+                                                                          16,
+                                                                          2,
+                                                                          0,
+                                                                          0),
+                                                              child: Text(
+                                                                '${items[position].fecha}',
+                                                                style: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .bodyText2,
+                                                              ),
+                                                            ),
+                                                            /*Padding(
+                                                                      padding: EdgeInsetsDirectional
+                                                                          .fromSTEB(
+                                                                              16,
+                                                                              0,
+                                                                              0,
+                                                                              0),
+                                                                      child: Text(
+                                                                        'ACME Co.',
+                                                                        style: FlutterFlowTheme.of(
+                                                                                context)
+                                                                            .bodyText2
+                                                                            .override(
+                                                                              fontFamily:
+                                                                                  'Poppins',
+                                                                              color:
+                                                                                  FlutterFlowTheme.of(context).primaryColor,
+                                                                              fontSize:
+                                                                                  12,
+                                                                            ),
+                                                                      ),
+                                                                    ),*/
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                right: 20),
+                                                        child: IconButton(
+                                                          icon: Icon(
+                                                            Icons
+                                                                .delete_outline,
+                                                            color: Colors.red,
+                                                            size: 24,
+                                                          ),
+                                                          onPressed: () =>
+                                                              _showDialog(
+                                                                  context,
+                                                                  position),
+                                                        ),
+                                                      ),
+                                                      IconButton(
+                                                          icon: Icon(
+                                                            Icons
+                                                                .mode_edit_outline,
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .primaryColor,
+                                                            size: 24,
+                                                          ),
+                                                          onPressed: () =>
+                                                              _navigateToClienteInformation(
+                                                                  context,
+                                                                  items[
+                                                                      position])),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ).animateOnPageLoad(animationsMap[
+                                                'containerOnPageLoadAnimation']),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  //nuevo para que pregunte antes de eliminar un registro
   void _showDialog(context, position) {
     showDialog(
       context: context,
@@ -195,6 +438,71 @@ class _ListViewClienteState extends State<ListViewCliente>
     );
   }
 
+  void _navigateToClienteInformation(
+      BuildContext context, Cliente cliente) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ClienteScreen(cliente)),
+    );
+  }
+
+  _cargarDiasFestivos() async {
+    if (_listadiasFestivos.length == 0) {
+      DateTime fecha_fin = DateTime.now().add(Duration(days: 90));
+      final holidaysByYear2022 = await holidays.getHolidays(year: 2022);
+      for (var holiday in holidaysByYear2022) {
+        List<String> res = holiday.date.toString().split('/');
+        _listadiasFestivos.add(
+            DateTime(int.parse(res[2]), int.parse(res[1]), int.parse(res[0])));
+        if (_listadiasFestivos.last.isAfter(fecha_fin)) {
+          break;
+        }
+      }
+      final holidaysByYear2023 = await holidays.getHolidays(year: 2023);
+      for (var holiday in holidaysByYear2023) {
+        List<String> res = holiday.date.toString().split('/');
+        _listadiasFestivos.add(
+            DateTime(int.parse(res[2]), int.parse(res[1]), int.parse(res[0])));
+        if (_listadiasFestivos.last.isAfter(fecha_fin)) {
+          break;
+        }
+      }
+      setState(() {});
+    }
+  }
+
+  Widget getDateRangePicker() {
+    return Container(
+        height: 250,
+        child: Card(
+            child: SfDateRangePicker(
+          view: DateRangePickerView.month,
+          selectionMode: DateRangePickerSelectionMode.single,
+          onSelectionChanged: selectionChanged,
+        )));
+  }
+
+  void selectionChanged(DateRangePickerSelectionChangedArgs args) {
+    SchedulerBinding.instance.addPostFrameCallback((duration) {
+      setState(() {});
+    });
+  }
+
+  void filtrarLista(DateTime fechaInicial, DateTime fechaFinal) {
+    if (_itemsBackup.length < 1) {
+      _itemsBackup = items;
+    }
+    var listaFiltrada = _itemsBackup
+        .where((cliente) =>
+            cliente.fechaPicked >= fechaInicial.millisecondsSinceEpoch &&
+            cliente.fechaPicked <= fechaFinal.millisecondsSinceEpoch)
+        .toList();
+
+    setState(() {
+      items = listaFiltrada;
+    });
+  }
+
   void _onClienteAdded(Event event) {
     setState(() {
       items.add(new Cliente.fromSnapShot(event.snapshot));
@@ -218,14 +526,6 @@ class _ListViewClienteState extends State<ListViewCliente>
         Navigator.of(context).pop();
       });
     });
-  }
-
-  void _navigateToClienteInformation(
-      BuildContext context, Cliente cliente) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ClienteScreen(cliente)),
-    );
   }
 
   void _navigateToCliente(BuildContext context, Cliente cliente) async {
@@ -367,62 +667,5 @@ class _ListViewClienteState extends State<ListViewCliente>
         ),
       ),
     );
-  }
-
-  Widget getDateRangePicker() {
-    return Container(
-        height: 250,
-        child: Card(
-            child: SfDateRangePicker(
-          view: DateRangePickerView.month,
-          selectionMode: DateRangePickerSelectionMode.single,
-          onSelectionChanged: selectionChanged,
-        )));
-  }
-
-  void selectionChanged(DateRangePickerSelectionChangedArgs args) {
-    SchedulerBinding.instance.addPostFrameCallback((duration) {
-      setState(() {});
-    });
-  }
-
-  void filtrarLista(DateTime fechaInicial, DateTime fechaFinal) {
-    if (_itemsBackup.length < 1) {
-      _itemsBackup = items;
-    }
-    var listaFiltrada = _itemsBackup
-        .where((cliente) =>
-            cliente.fechaPicked >= fechaInicial.millisecondsSinceEpoch &&
-            cliente.fechaPicked <= fechaFinal.millisecondsSinceEpoch)
-        .toList();
-
-    setState(() {
-      items = listaFiltrada;
-    });
-  }
-
-  _cargarDiasFestivos() async {
-    if (_listadiasFestivos.length == 0) {
-      DateTime fecha_fin = DateTime.now().add(Duration(days: 90));
-      final holidaysByYear2022 = await holidays.getHolidays(year: 2022);
-      for (var holiday in holidaysByYear2022) {
-        List<String> res = holiday.date.toString().split('/');
-        _listadiasFestivos.add(
-            DateTime(int.parse(res[2]), int.parse(res[1]), int.parse(res[0])));
-        if (_listadiasFestivos.last.isAfter(fecha_fin)) {
-          break;
-        }
-      }
-      final holidaysByYear2023 = await holidays.getHolidays(year: 2023);
-      for (var holiday in holidaysByYear2023) {
-        List<String> res = holiday.date.toString().split('/');
-        _listadiasFestivos.add(
-            DateTime(int.parse(res[2]), int.parse(res[1]), int.parse(res[0])));
-        if (_listadiasFestivos.last.isAfter(fecha_fin)) {
-          break;
-        }
-      }
-      setState(() {});
-    }
   }
 }

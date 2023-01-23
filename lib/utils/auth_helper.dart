@@ -18,10 +18,23 @@ class AuthHelper {
   static FirebaseAuth _auth = FirebaseAuth.instance;
 
   static signInWithEmail({String email, String password}) async {
-    final res = await _auth.signInWithEmailAndPassword(
+     try {
+       final res = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
     final User user = res.user;
-    return user;
+      Get.snackbar('Bienvenido', ' ${user.email} Su ingreso ha sido exitoso');
+      print('Ingreso Exitoso');
+      Future.delayed(
+        Duration(seconds: 4),
+        () {
+          
+        },
+      );
+      return user;
+    } catch (e) {
+      Get.snackbar('Error', 'Correo o contraseña Invalido',
+          snackPosition: SnackPosition.BOTTOM);
+    }
   }
 
   static signupWithEmail(
@@ -49,10 +62,11 @@ class AuthHelper {
       final credential = GoogleAuthProvider.credential(
           accessToken: auth.accessToken, idToken: auth.idToken);
       final res = await _auth.signInWithCredential(credential);
-       if (res.user != null) {
+     
+      if (res.user != null) {
         UserHelper.saveUser(res.user);
-       return res.user;
-    }
+        return res.user;
+      }
     } on FirebaseException catch (e) {
       Logger().e(e.message);
     } catch (e) {
@@ -96,12 +110,12 @@ class UserHelper {
     return funcionarioList;
   }
 
-  Future<void> eliminarFuncionario(String id) async {
+  Future<void> eliminarFuncionario(String email) async {
     CollectionReference funcionarios =
         FirebaseFirestore.instance.collection('users');
 
     return funcionarios
-        .doc(id)
+        .doc(email)
         .delete()
         .then((value) => print("User Deleted"))
         .catchError((error) => print("Failed to delete user: $error"));

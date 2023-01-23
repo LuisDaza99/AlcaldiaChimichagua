@@ -149,7 +149,7 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                     padding: EdgeInsetsDirectional.fromSTEB(
                                         16, 16, 0, 0),
                                     child: Text(
-                                      'Clientes',
+                                      'Funcionarios',
                                       style:
                                           FlutterFlowTheme.of(context).title1,
                                     ),
@@ -279,7 +279,7 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                                     '?alt=media', width: 70,
                                                                   height: 70,
                                                                   fit: BoxFit
-                                                                      .cover,
+                                                                      .fitHeight,
                                                                 ),
                                                               ),
                                                               Expanded(
@@ -319,7 +319,10 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                                                               0),
                                                                       child:
                                                                           Text(
-                                                                        'Head of Procurement',
+                                                                        snapshot
+                                                                              .data[index]
+                                                                              .role
+                                                                              .toString(),
                                                                         style: FlutterFlowTheme.of(context)
                                                                             .bodyText2,
                                                                       ),
@@ -359,7 +362,7 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                                                     size: 24,
                                                                     
                                                                   ), onPressed: () => _showDialog(
-                                        snapshot.data, context, index),
+                                        snapshot.data[index], context),
                                                                 ),
 
                                                               ),
@@ -408,7 +411,7 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
     );
   }
 
-  void _showDialog(items, context, position) {
+  void _showDialog(Funcionario funcionario, context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -423,9 +426,9 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                 color: Colors.purple,
               ),
               onPressed: () async {  
-                await UserHelper().eliminarFuncionario(items.data[position]._email);
+                await UserHelper().eliminarFuncionario(funcionario.email);
                 setState(() {
-                  
+                Navigator.of(context).pop();
                 });
               },
             ),
@@ -441,11 +444,11 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
     );
   }
   
-  void _deleteFuncionario(items, BuildContext context, Funcionario funcionario,
+  void _deleteFuncionario( items, BuildContext context, Funcionario funcionario,
       int position) async {
-    await funcionarioReference.child(funcionario.id).remove().then((_) {
+    await UserHelper().eliminarFuncionario(funcionario.id).then((_) {
       setState(() {
-        items.removeAt(position);
+        items.removeAT(position);
         Navigator.of(context).pop();
       });
     });

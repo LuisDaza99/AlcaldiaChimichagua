@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:alcaldia/model/cliente.dart';
 
-
 class ClienteInformation extends StatefulWidget {
   final Cliente cliente;
   ClienteInformation(this.cliente);
@@ -13,15 +12,13 @@ class ClienteInformation extends StatefulWidget {
 final clienteReference = FirebaseDatabase.instance.reference().child('cliente');
 
 class _ClienteInformationState extends State<ClienteInformation> {
-
   List<Cliente> items;
 
-
+ 
 
   @override
-  void initState() {   
-    super.initState();
-    
+  void initState() {
+    super.initState(); 
   }
 
   @override
@@ -37,33 +34,63 @@ class _ClienteInformationState extends State<ClienteInformation> {
         child: Card(
           child: Center(
             child: Column(
-              children: <Widget>[                
-                new Text("Nombre : ${widget.cliente.nombre}", style: TextStyle(fontSize: 18.0),),
-                Padding(padding: EdgeInsets.only(top: 8.0),),
+              children: <Widget>[
+                new Text(
+                  "Nombre : ${widget.cliente.nombre}",
+                  style: TextStyle(fontSize: 18.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                ),
                 Divider(),
-                new Text("Identificacion : ${widget.cliente.identificacion}", style: TextStyle(fontSize: 18.0),),
-                Padding(padding: EdgeInsets.only(top: 8.0),),
+                new Text(
+                  "Identificacion : ${widget.cliente.identificacion}",
+                  style: TextStyle(fontSize: 18.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                ),
                 Divider(),
-                new Text("Area encargada : ${widget.cliente.areaa}", style: TextStyle(fontSize: 18.0),),
-                Padding(padding: EdgeInsets.only(top: 8.0),),
+                new Text(
+                  "Area encargada : ${widget.cliente.area}",
+                  style: TextStyle(fontSize: 18.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                ),
                 Divider(),
-                new Text("Area : ${widget.cliente.motivo}", style: TextStyle(fontSize: 18.0),),
-                Padding(padding: EdgeInsets.only(top: 8.0),),
+                new Text(
+                  "Motivo : ${widget.cliente.motivo}",
+                  style: TextStyle(fontSize: 18.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                ),
                 Divider(),
-                new Text("Fecha: ${widget.cliente.fecha}", style: TextStyle(fontSize: 18.0),),
-                Padding(padding: EdgeInsets.only(top: 8.0),),
+                new Text(
+                  "Fecha: ${widget.cliente.fecha}",
+                  style: TextStyle(fontSize: 18.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                ),
                 Divider(),
-                new Text("Hora: ${widget.cliente.hora}", style: TextStyle(fontSize: 18.0),),
-                Padding(padding: EdgeInsets.only(top: 8.0),),
+                new Text(
+                  "Hora: ${widget.cliente.hora}",
+                  style: TextStyle(fontSize: 18.0),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                ),
                 Divider(),
                 Container(
-                          height: 300.0,
-                          width: 300.0,
-              child: Center(
-                child: 
-                    Image.asset('assets/diseño_interfaz/user2.jpg'), //nuevo para traer la imagen de firestore
-              ),
-            ),
+                  height: 300.0,
+                  width: 300.0,
+                  child: Center(
+                    child: Image.asset(
+                        'assets/diseño_interfaz/user2.jpg'), //nuevo para traer la imagen de firestore
+                  ),
+                ),
               ],
             ),
           ),
