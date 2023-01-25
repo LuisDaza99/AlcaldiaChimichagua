@@ -43,43 +43,127 @@ class _PrincipalAdminState extends State<PrincipalAdmin> {
                 ).image,
               ),
             ),
-            child: Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(24, 0, 0, 0),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(0, 50, 0, 0),
-                        child: Card(
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          color: FlutterFlowTheme.of(context).primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(70),
-                          ),
-                          child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(2, 2, 2, 2),
-                            child: Container(
-                              width: 76,
-                              height: 76,
-                              clipBehavior: Clip.antiAlias,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                              ),
-                              child: Image.network(
-                                'https://firebasestorage.googleapis.com/v0/b/alcaldiapp-e9da6.appspot.com/o/Admin%2Flogoo.png?alt=media&token=d574e5e2-73fb-4bbd-b0aa-8eb859b81569',
-                                fit: BoxFit.fitHeight,
+            child: FutureBuilder<Funcionario>(
+              future: AuthHelper().getUser(),
+              builder: (BuildContext context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.hasData) {
+                  return Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(24, 0, 0, 0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(0, 50, 0, 0),
+                              child: Card(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                color:
+                                    FlutterFlowTheme.of(context).primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(70),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      2, 2, 2, 2),
+                                  child: Container(
+                                    width: 76,
+                                    height: 76,
+                                    clipBehavior: Clip.antiAlias,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: (snapshot.data.funcionarioImage!=null||FirebaseAuth.instance.currentUser.photoURL!=null) ? Image.network(
+                                      (snapshot.data.funcionarioImage.isNotEmpty) ? snapshot.data.funcionarioImage:FirebaseAuth.instance.currentUser.photoURL.isNotEmpty,
+                                      fit: BoxFit.cover,
+                                    ) :Image.asset(
+                                      'assets/diseño_interfaz/User2.jpg',
+                                      fit: BoxFit.fitHeight,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(5, 8, 0, 0),
+                                child: Text((snapshot.data.nombre!=null) ? snapshot.data.nombre : snapshot.data.email,
+                                    style: FlutterFlowTheme.of(context).title1.override(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryColor,
+                                        fontFamily: "Poppins",
+                                        fontSize: 30))),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(24, 0, 0, 0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(0, 50, 0, 0),
+                              child: Card(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                color:
+                                    FlutterFlowTheme.of(context).primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(70),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      2, 2, 2, 2),
+                                  child: Container(
+                                    width: 76,
+                                    height: 76,
+                                    clipBehavior: Clip.antiAlias,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Image.asset(
+                                      'assets/diseño_interfaz/User2.jpg',
+                                      fit: BoxFit.fitHeight,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 8, 0, 0),
+                                child: Text("",
+                                    style: TextStyle(
+                                        color: FlutterFlowTheme.of(context)
+                                            .textColor,
+                                        fontFamily: "Poppins-Medium",
+                                        fontSize: 30))),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
             ),
           ),
           FutureBuilder<Funcionario>(

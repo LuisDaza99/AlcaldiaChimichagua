@@ -59,87 +59,94 @@ class _HomePageUsuarioState extends State<HomePageUsuario> {
               child: Column(
                 children: [
                   if (mostrarBusqueda)
-                    Container(
-                      width: 380,
-                      child: Expanded(
-                        child: Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(0, 12, 0, 0),
-                          child: TextFormField(
-                            focusNode: _focusNodeBusqeda,
-                            controller: textControllerBusqueda,
-                            onChanged: (_) => EasyDebounce.debounce(
-                              'textControllerBusqueda',
-                              Duration(milliseconds: 50),
-                              () => setState(() {}),
-                            ),
-                            obscureText: false,
-                            decoration: InputDecoration(
-                              labelText: 'Buscar dependencia...',
-                              labelStyle: FlutterFlowTheme.of(context)
-                                  .bodyText2
-                                  .override(
-                                    fontFamily: 'Poppins',
-                                    color: Color(0xFF57636C),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.normal,
-                                    useGoogleFonts: GoogleFonts.asMap()
-                                        .containsKey(
-                                            FlutterFlowTheme.of(context)
-                                                .bodyText2Family),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 2, 16, 2),
+                      child: Row(
+                        children: [
+                          Container(
+                            
+                            child: Expanded(
+                              child: Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(0, 12, 0, 0),
+                                child: TextFormField(
+                                  focusNode: _focusNodeBusqeda,
+                                  controller: textControllerBusqueda,
+                                  onChanged: (_) => EasyDebounce.debounce(
+                                    'textControllerBusqueda',
+                                    Duration(milliseconds: 50),
+                                    () => setState(() {}),
                                   ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryText,
-                                  width: 1,
+                                  obscureText: false,
+                                  decoration: InputDecoration(
+                                    labelText: 'Buscar dependencia...',
+                                    labelStyle: FlutterFlowTheme.of(context)
+                                        .bodyText2
+                                        .override(
+                                          fontFamily: 'Poppins',
+                                          color: Color(0xFF57636C),
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.normal,
+                                          useGoogleFonts: GoogleFonts.asMap()
+                                              .containsKey(
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyText2Family),
+                                        ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: FlutterFlowTheme.of(context)
+                                            .secondaryText,
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0x00000000),
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0x00000000),
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    filled: true,
+                                    fillColor: FlutterFlowTheme.of(context)
+                                        .secondaryBackground,
+                                    prefixIcon: Icon(
+                                      Icons.search_rounded,
+                                      color: Color(0xFF57636C),
+                                    ),
+                                  ),
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyText1
+                                      .override(
+                                        fontFamily: 'Poppins',
+                                        color:
+                                            FlutterFlowTheme.of(context).primaryText,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.normal,
+                                        useGoogleFonts: GoogleFonts.asMap()
+                                            .containsKey(FlutterFlowTheme.of(context)
+                                                .bodyText1Family),
+                                      ),
+                                  maxLines: null,
                                 ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryText,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0x00000000),
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0x00000000),
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              filled: true,
-                              fillColor: FlutterFlowTheme.of(context)
-                                  .secondaryBackground,
-                              prefixIcon: Icon(
-                                Icons.search_rounded,
-                                color: Color(0xFF57636C),
                               ),
                             ),
-                            style: FlutterFlowTheme.of(context)
-                                .bodyText1
-                                .override(
-                                  fontFamily: 'Poppins',
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.normal,
-                                  useGoogleFonts: GoogleFonts.asMap()
-                                      .containsKey(FlutterFlowTheme.of(context)
-                                          .bodyText1Family),
-                                ),
-                            maxLines: null,
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   if (textControllerBusqueda.text.length < 1)

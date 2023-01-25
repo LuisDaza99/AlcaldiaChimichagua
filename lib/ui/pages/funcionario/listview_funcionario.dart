@@ -1,5 +1,6 @@
 import 'package:alcaldia/model/funcionario.dart';
 import 'package:easy_debounce/easy_debounce.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../flutter_flow/flutter_flow_animations.dart';
@@ -468,6 +469,10 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                                                   ],
                                                                 ),
                                                               ),
+                                                              if(snapshot
+                                                                            .data[index]
+                                                                            .email != FirebaseAuth.instance.currentUser.email
+                                                                            )
                                                               Padding(
                                                                 padding:
                                                                     const EdgeInsets

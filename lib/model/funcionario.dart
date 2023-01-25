@@ -51,7 +51,7 @@ class Funcionario {
       map['area'],
       map['role'],
       map['fechanacimiento'],
-      map['funcionaroImage']
+      map['FuncionarioImage']
     );
   }
 

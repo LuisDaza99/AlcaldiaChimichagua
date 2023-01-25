@@ -51,7 +51,7 @@ class _HomePageStateState extends State<HomePage> {
               ),
             ),
             child: FutureBuilder<Funcionario>(
-              future: AuthHelper(). getUser(),
+              future: AuthHelper().getUser(),
               builder: (BuildContext context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done &&
                     snapshot.hasData) {
@@ -85,7 +85,7 @@ class _HomePageStateState extends State<HomePage> {
                                     ),
                                     child: (snapshot.data.funcionarioImage!=null||FirebaseAuth.instance.currentUser.photoURL!=null) ? Image.network(
                                       (snapshot.data.funcionarioImage.isNotEmpty) ? snapshot.data.funcionarioImage:FirebaseAuth.instance.currentUser.photoURL.isNotEmpty,
-                                      fit: BoxFit.fitHeight,
+                                      fit: BoxFit.cover,
                                     ) :Image.asset(
                                       'assets/diseño_interfaz/User2.jpg',
                                       fit: BoxFit.fitHeight,
