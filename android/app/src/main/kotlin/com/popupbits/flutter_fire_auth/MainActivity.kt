@@ -1,4 +1,4 @@
-package com.popupbits.flutter_fire_auth
+package com.popupbits.alcaldia
 
 import io.flutter.embedding.android.FlutterActivity
 

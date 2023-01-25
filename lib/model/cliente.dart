@@ -16,7 +16,7 @@ class Cliente {
   Cliente.map(dynamic obj) {
     this._nombre = obj['nombre'];
     this._identificacion = obj['identificacion'];
-    this._area = obj['areaa'];
+    this._area = obj['area encargada'];
     this._motivo = obj['motivo'];
     this._fecha = obj['fecha'];
     this._hora = obj['hora'];
@@ -35,7 +35,7 @@ class Cliente {
     _id = snapshot.key;
     _nombre = snapshot.value['nombre'];
     _identificacion = snapshot.value['identificacion'];
-    _area = snapshot.value['areaa'];
+    _area = snapshot.value['area encargada'];
     _motivo = snapshot.value['motivo'];
     _fecha = snapshot.value['fecha'];
     _hora = snapshot.value['hora'];

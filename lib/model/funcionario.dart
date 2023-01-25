@@ -27,7 +27,7 @@ class Funcionario {
       this._funcionarioImage);
 
   Funcionario.map(dynamic obj) {
-    this._nombre = (obj['nombre']);
+    this._nombre = (obj['nombre'].toString());
     this._identificacion = obj['identificacion'];
     this._email = obj['email'];
     this._password = obj['password'];
@@ -51,7 +51,7 @@ class Funcionario {
       map['area'],
       map['role'],
       map['fechanacimiento'],
-      map['funcionarioimage']
+      map['funcionaroImage']
     );
   }
 

@@ -1,6 +1,6 @@
-
-
 import 'package:alcaldia/model/funcionario.dart';
+import 'package:easy_debounce/easy_debounce.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../flutter_flow/flutter_flow_animations.dart';
 import '../../../flutter_flow/flutter_flow_icon_button.dart';
@@ -14,9 +14,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../utils/auth_helper.dart';
 import 'funcionario_information.dart';
 import 'funcionario_screen.dart';
-
-
-
 
 class ListViewFuncionario extends StatefulWidget {
   const ListViewFuncionario({Key key}) : super(key: key);
@@ -52,7 +49,9 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
   final _unfocusNode = FocusNode();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<Funcionario> listaFuncionarios = [];
-
+  TextEditingController _textBusqueda = TextEditingController();
+  FocusNode _focusNode = FocusNode();
+  bool _mostrarBusqueda = false;
   @override
   void initState() {
     super.initState();
@@ -81,28 +80,28 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
             AbsorbPointer(
               absorbing: false,
               child: FloatingActionButton(
-          child: Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
-          backgroundColor: FlutterFlowTheme.of(context).primaryColor,
-          onPressed: () async{
-            await Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => FuncionarioScreen(
-              Funcionario(null, '', '', '', '', '', '', '', '', '', ''))),
-    ).then((value) {setState(() {
-      
-    });});
-          },
-        ),
+                child: Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+                backgroundColor: FlutterFlowTheme.of(context).primaryColor,
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => FuncionarioScreen(Funcionario(
+                            null, '', '', '', '', '', '', '', '', '', ''))),
+                  ).then((value) {
+                    setState(() {});
+                  });
+                },
+              ),
             )
           ],
         ),
       ),
       key: scaffoldKey,
-      backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+      backgroundColor: Color.fromARGB(255, 223, 231, 235),
       appBar: false
           ? AppBar(
               backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
@@ -150,8 +149,11 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                         16, 16, 0, 0),
                                     child: Text(
                                       'Funcionarios',
-                                      style:
-                                          FlutterFlowTheme.of(context).title1,
+                                      style: TextStyle(
+                                        color: Color.fromARGB(255, 25, 116, 28),
+                                        fontSize: 25,
+                                        fontFamily: 'Poppins-bold',
+                                      ),
                                     ),
                                   ),
                                   if (responsiveVisibility(
@@ -159,6 +161,7 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                     tabletLandscape: false,
                                     desktop: false,
                                   ))
+                                    if(!_mostrarBusqueda)
                                     FlutterFlowIconButton(
                                       borderColor: Colors.transparent,
                                       borderRadius: 30,
@@ -167,15 +170,122 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                       icon: Icon(
                                         Icons.search_rounded,
                                         color: FlutterFlowTheme.of(context)
-                                            .primaryText,
+                                            .primaryColor,
                                         size: 30,
                                       ),
                                       onPressed: () {
-                                        print('IconButton pressed ...');
+                                        print('Busqueda...');
+                                        setState(() {
+                                          _focusNode.requestFocus();
+                                          _mostrarBusqueda = true;
+                                        });
                                       },
                                     ),
                                 ],
                               ),
+                            ),
+                            if(_mostrarBusqueda)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16,3,16,12),
+                              child: Container(
+                                height: 60,
+                                decoration:BoxDecoration(
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .secondaryBackground,
+                                                            boxShadow: [
+                                                              BoxShadow(
+                                                                blurRadius: 3,
+                                                                color: Color.fromARGB(55, 24, 66, 40),
+                                                                offset:
+                                                                    Offset(0, 1),
+                                                              )
+                                                            ],
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(12),
+                                                          ),
+                      
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.fromSTEB(0, 5, 0, 0),
+                        child: TextFormField(
+                          focusNode: _focusNode,
+                          controller: _textBusqueda,
+                          onChanged: (_) => EasyDebounce.debounce(
+                              '_textBusqueda',
+                              Duration(milliseconds: 50),
+                              () => setState(() {}),
+                          ),
+                          obscureText: false,
+                          decoration: InputDecoration(
+                             
+                              labelStyle: FlutterFlowTheme.of(context)
+                                  .bodyText2
+                                  .override(
+                                    fontFamily: 'Poppins',
+                                    color: FlutterFlowTheme.of(context).primaryColor,
+                                    fontSize: 18,
+                                    
+                                    fontWeight: FontWeight.normal,
+                                    useGoogleFonts: GoogleFonts.asMap()
+                                        .containsKey(
+                                            FlutterFlowTheme.of(context)
+                                                .bodyText2Family),
+                                  ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: FlutterFlowTheme.of(context)
+                                      .primaryColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  
+                                  color: Color.fromARGB(0, 252, 33, 33),
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color.fromARGB(0, 255, 5, 5),
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              focusedErrorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color.fromARGB(0, 0, 255, 76),
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              filled: true,
+                              fillColor: FlutterFlowTheme.of(context)
+                                  .secondaryBackground,
+                              prefixIcon: Icon(
+                                Icons.search_rounded,
+                                color: FlutterFlowTheme.of(context).primaryColor,
+                              ),
+                          ),
+                          style: FlutterFlowTheme.of(context)
+                                .bodyText1
+                                .override(
+                                  fontFamily: 'Poppins',
+                                  color:
+                                      FlutterFlowTheme.of(context).primaryColor,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.normal,
+                                  useGoogleFonts: GoogleFonts.asMap()
+                                      .containsKey(FlutterFlowTheme.of(context)
+                                          .bodyText1Family),
+                                ),
+                          maxLines: null,
+                        ),
+                      ),
+                    ),
                             ),
                             Padding(
                               padding:
@@ -184,19 +294,24 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                 width: MediaQuery.of(context).size.width,
                                 height:
                                     MediaQuery.of(context).size.height * 0.94,
-                                decoration: BoxDecoration(),
                                 child: Padding(
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       0, 0, 0, 24),
                                   child: Container(
                                       width: 100,
                                       decoration: BoxDecoration(
-                                        color: FlutterFlowTheme.of(context)
-                                            .primaryBackground,
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        border: Border.all(
+                                            color: Color.fromARGB(
+                                                255, 25, 116, 28),
+                                            width: 1),
+                                        color:
+                                            Color.fromARGB(255, 223, 231, 235),
                                       ),
                                       child: FutureBuilder<List<Funcionario>>(
-                                        future:
-                                            UserHelper().loadUser(),
+                                        future: UserHelper()
+                                            .loadUser(_textBusqueda.text),
                                         builder:
                                             (BuildContext context, snapshot) {
                                           if (snapshot.connectionState ==
@@ -217,23 +332,20 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                                       FlutterFlowTheme.of(
                                                               context)
                                                           .primaryColor,
-                                                  onLeftSwipe: () async {
-                                                    
-                                                  },
-                                                  onRightSwipe: () {
-                                                    
-                                                  },
+                                                  onLeftSwipe: () async {},
+                                                  onRightSwipe: () {},
                                                   child: Padding(
                                                     padding:
                                                         EdgeInsetsDirectional
                                                             .fromSTEB(
                                                                 16, 8, 16, 0),
                                                     child: InkWell(
-                                                      onTap: () => _navigateToFuncionario(
-                                          context, snapshot.data[index]),
-                                                      onLongPress: () async {
-                                                       
-                                                      },
+                                                      onTap: () =>
+                                                          _navigateToFuncionario(
+                                                              context,
+                                                              snapshot
+                                                                  .data[index]),
+                                                      onLongPress: () async {},
                                                       child: Container(
                                                         width: double.infinity,
                                                         decoration:
@@ -273,14 +385,20 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                                                         .circular(
                                                                             8),
                                                                 child: '${snapshot.data[index].funcionarioImage}' ==
-                                                ''
-                                            ? Text('No image') : Image.network(
-                                                                   '${snapshot.data[index].funcionarioImage}' +
-                                                    '?alt=media', width: 70,
-                                                                  height: 70,
-                                                                  fit: BoxFit
-                                                                      .fitHeight,
-                                                                ),
+                                                                        ''
+                                                                    ? Text(
+                                                                        'No image')
+                                                                    : Image
+                                                                        .network(
+                                                                        '${snapshot.data[index].funcionarioImage}' +
+                                                                            '?alt=media',
+                                                                        width:
+                                                                            70,
+                                                                        height:
+                                                                            70,
+                                                                        fit: BoxFit
+                                                                            .fitHeight,
+                                                                      ),
                                                               ),
                                                               Expanded(
                                                                 child: Column(
@@ -291,25 +409,23 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                                                       CrossAxisAlignment
                                                                           .start,
                                                                   children: [
-                                                                   
-                              
-                                                                    
-                                                                      Padding(
-                                                                        padding: EdgeInsetsDirectional.fromSTEB(
-                                                                            16,
-                                                                            0,
-                                                                            0,
-                                                                            0),
-                                                                        child:
-                                                                            Text(
-                                                                          snapshot
-                                                                              .data[index]
-                                                                              .nombre
-                                                                              .toString(),
-                                                                          style:
-                                                                              FlutterFlowTheme.of(context).subtitle1,
-                                                                        ),
+                                                                    Padding(
+                                                                      padding: EdgeInsetsDirectional
+                                                                          .fromSTEB(
+                                                                              16,
+                                                                              0,
+                                                                              0,
+                                                                              0),
+                                                                      child:
+                                                                          Text(
+                                                                        snapshot
+                                                                            .data[index]
+                                                                            .nombre
+                                                                            .toString(),
+                                                                        style: FlutterFlowTheme.of(context)
+                                                                            .subtitle1,
                                                                       ),
+                                                                    ),
                                                                     Padding(
                                                                       padding: EdgeInsetsDirectional
                                                                           .fromSTEB(
@@ -320,9 +436,9 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                                                       child:
                                                                           Text(
                                                                         snapshot
-                                                                              .data[index]
-                                                                              .role
-                                                                              .toString(),
+                                                                            .data[index]
+                                                                            .role
+                                                                            .toString(),
                                                                         style: FlutterFlowTheme.of(context)
                                                                             .bodyText2,
                                                                       ),
@@ -353,31 +469,41 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
                                                                 ),
                                                               ),
                                                               Padding(
-                                                                padding: const EdgeInsets.only(right: 20),
-                                                                child: IconButton(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .only(
+                                                                        right:
+                                                                            20),
+                                                                child:
+                                                                    IconButton(
                                                                   icon: Icon(
                                                                     Icons
                                                                         .delete_outline,
-                                                                    color: Colors.red,
+                                                                    color: Colors
+                                                                        .red,
                                                                     size: 24,
-                                                                    
-                                                                  ), onPressed: () => _showDialog(
-                                        snapshot.data[index], context),
+                                                                  ),
+                                                                  onPressed: () =>
+                                                                      _showDialog(
+                                                                          snapshot
+                                                                              .data[index],
+                                                                          context),
                                                                 ),
-
                                                               ),
                                                               IconButton(
-                                                                icon: Icon(
-                                                                  Icons
-                                                                      .mode_edit_outline,
-                                                                  color: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .primaryColor,
-                                                                  size: 24,
-                                                                ), onPressed: () =>
-                                            _navigateToFuncionarioInformation(
-                                                context, snapshot.data[index])),
-                            
+                                                                  icon: Icon(
+                                                                    Icons
+                                                                        .mode_edit_outline,
+                                                                    color: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .primaryColor,
+                                                                    size: 24,
+                                                                  ),
+                                                                  onPressed: () =>
+                                                                      _navigateToFuncionarioInformation(
+                                                                          context,
+                                                                          snapshot
+                                                                              .data[index])),
                                                             ],
                                                           ),
                                                         ),
@@ -416,19 +542,18 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Alerta'),
-          content:
-              Text('Esta seguro de que quieres eliminar este funcionario?'),
+          title: Text('Advertencia'),
+          content: Text('¿Está seguro de que desea eliminar este funcionario?'),
           actions: <Widget>[
             IconButton(
               icon: Icon(
                 Icons.delete,
-                color: Colors.purple,
+                color: Colors.red,
               ),
-              onPressed: () async {  
+              onPressed: () async {
                 await UserHelper().eliminarFuncionario(funcionario.email);
                 setState(() {
-                Navigator.of(context).pop();
+                  Navigator.of(context).pop();
                 });
               },
             ),
@@ -443,8 +568,8 @@ class _ListViewFuncionarioState extends State<ListViewFuncionario>
       },
     );
   }
-  
-  void _deleteFuncionario( items, BuildContext context, Funcionario funcionario,
+
+  void _deleteFuncionario(items, BuildContext context, Funcionario funcionario,
       int position) async {
     await UserHelper().eliminarFuncionario(funcionario.id).then((_) {
       setState(() {

@@ -20,6 +20,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 
 import 'app_theme.dart';
@@ -112,17 +113,16 @@ class MainScreen extends StatelessWidget {
                   if (snapshot.hasData && snapshot.data != null) {
                     final userDoc = snapshot.data;
                     final user = userDoc.data();
-                    if (user['role'] != null) {}
+
                     switch (user['role']) {
-                      case 'admin' :
-                        return PrincipalAdmin();
-                        break;
-                      case 'user' :
+                      case 'admin':
                         return HomePageUsuario();
                         break;
-
+                      case 'user':
+                        return HomePageUsuario();
+                        break;
                       case 'funcionario':
-                        return FuncionarioPageAdmin();
+                        return HomePageUsuario();
                         break;
                       default:
                         return HomePageUsuario();

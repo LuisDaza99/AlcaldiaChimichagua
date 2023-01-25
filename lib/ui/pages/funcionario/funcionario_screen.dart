@@ -145,9 +145,10 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
         elevation: 0,
       ),
       body: Container(
+        decoration: BoxDecoration(   
+        ),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height * 1,
-        decoration: BoxDecoration(),
         child: Padding(
           padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10),
           child: SingleChildScrollView(
@@ -289,6 +290,14 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                       Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
                         child: TextFormField(
+                          validator: (true)
+                              ? (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'No deje este campo vacio';
+                                  }
+                                  return null;
+                                }
+                              : null,
                           controller: _emailController,
                           obscureText: false,
                           decoration: InputDecoration(
@@ -333,6 +342,7 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                               Icons.alternate_email,
                               size: 21,
                             ),
+                           
                           ),
                           style: FlutterFlowTheme.of(context).bodyText1,
                           keyboardType: TextInputType.emailAddress,
@@ -341,6 +351,14 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                       Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
                         child: TextFormField(
+                          validator: (true)
+                              ? (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'No deje este campo vacio';
+                                  }
+                                  return null;
+                                }
+                              : null,
                           maxLength: 10,
                           controller: _identificacionController,
                           obscureText: false,
@@ -394,6 +412,14 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                       Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
                         child: TextFormField(
+                          validator: (true)
+                              ? (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'No deje este campo vacio';
+                                  }
+                                  return null;
+                                }
+                              : null,
                           maxLength: 10,
                           controller: _telefonoController,
                           obscureText: false,
@@ -518,6 +544,7 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                               roleController = value;
                             });
                           },
+                          
                           width: MediaQuery.of(context).size.width,
                           height: 45,
                           textStyle:
@@ -525,6 +552,7 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                                     fontFamily: 'Poppins',
                                     color: Color.fromARGB(207, 0, 0, 0),
                                   ),
+                                  
                           hintText: 'Rol y permiso...',
                           fillColor: Color(0xFFF1F4F8),
                           elevation: 2,
@@ -538,6 +566,14 @@ class _FuncionarioScreenState extends State<FuncionarioScreen> {
                       Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(20, 20, 20, 0),
                         child: TextFormField(
+                          validator: (true)
+                              ? (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'No deje este campo vacio';
+                                  }
+                                  return null;
+                                }
+                              : null,
                           controller: _fechanacimientoController,
                           readOnly: true,
                           obscureText: false,

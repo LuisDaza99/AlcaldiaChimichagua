@@ -98,7 +98,7 @@ class _ListViewClienteState extends State<ListViewCliente>
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: Padding(
-        padding: const EdgeInsets.fromLTRB(40, 0, 20, 80),
+        padding: const EdgeInsets.fromLTRB(40, 0, 20, 15),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -175,7 +175,9 @@ class _ListViewClienteState extends State<ListViewCliente>
                                     child: Text(
                                       'Clientes',
                                       style:
-                                          FlutterFlowTheme.of(context).title1,
+                                         TextStyle(
+                                    color: Color.fromARGB(255, 25, 116, 28), fontSize: 25, fontFamily: 'Poppins-bold',
+                                    ),
                                     ),
                                   ),
                                   if (responsiveVisibility(
@@ -183,6 +185,7 @@ class _ListViewClienteState extends State<ListViewCliente>
                                     tabletLandscape: false,
                                     desktop: false,
                                   ))
+                                  
                                     FlutterFlowIconButton(
                                       borderColor: Colors.transparent,
                                       borderRadius: 30,
@@ -412,13 +415,13 @@ class _ListViewClienteState extends State<ListViewCliente>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Alerta'),
-          content: Text('Esta seguro de que quieres eliminar este cliente?'),
+          title: Text('Advertencia'),
+          content: Text('¿Está seguro de que desea eliminar este cliente?'),
           actions: <Widget>[
             IconButton(
               icon: Icon(
                 Icons.delete,
-                color: Colors.purple,
+                color: Colors.red,
               ),
               onPressed: () => _deleteCliente(
                 context,

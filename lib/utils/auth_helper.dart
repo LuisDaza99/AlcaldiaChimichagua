@@ -7,33 +7,41 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:device_info/device_info.dart';
 import 'package:logger/logger.dart';
 import 'package:package_info/package_info.dart';
+import 'package:translator/translator.dart';
 
 class AuthHelper {
   static FirebaseAuth _auth = FirebaseAuth.instance;
 
   static signInWithEmail({String email, String password}) async {
-     try {
-       final res = await _auth.signInWithEmailAndPassword(
-        email: email, password: password);
-    final User user = res.user;
+    try {
+      final res = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      final User user = res.user;
       Get.snackbar('Bienvenido', ' ${user.email} Su ingreso ha sido exitoso');
       print('Ingreso Exitoso');
       Future.delayed(
         Duration(seconds: 4),
-        () {
-          
-        },
+        () {},
       );
       return user;
+    } on FirebaseAuthException catch (e) {
+      Logger().e('Error: ' + e.message + ' - Codigo: ' + e.code);
+      var errorTraducido = await traducir(e.message);
+      Get.snackbar('Error', errorTraducido,
+          icon: Icon(
+            Icons.error_outline,
+            color: Colors.red,
+          ),
+          colorText: Color.fromARGB(255, 114, 14, 7));
     } catch (e) {
-      Get.snackbar('Error', 'Correo o contraseña Invalido',
-          snackPosition: SnackPosition.BOTTOM);
+      Logger().e(e);
     }
   }
 
@@ -41,16 +49,46 @@ class AuthHelper {
       {String email,
       String password,
       String rol = 'user',
-      bool estaRegistrado = false}) async {
-    final res = await _auth.createUserWithEmailAndPassword(
+      bool estaRegistrado = false,
+      BuildContext context}) async {
+    FirebaseFirestore _db = FirebaseFirestore.instance;
+
+    var existe = await _db.collection("users").doc(email).get();
+    if (!(existe.exists) && !estaRegistrado) {
+      Map<String, dynamic> userData = {
+        "FuncionarioImage": "",
+        "fechanacimiento": "",
+        "area": "",
+        "telefono": "",
+        "cargo": "",
+        "password": "",
+        "identificacion": "",
+        "nombre": "",
+        "name": "",
+        "email": email.toLowerCase(),
+        "last_login": "",
+        "created_at": "",
+        "role": rol,
+        "build_number": "",
+      };
+      await _db.collection("users").doc(email).set(userData);
+    } else {
+      return 'Este usuario ya esta registrado';
+    }
+    final UserCredential res = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
-    final User user = res.user;
-    if (user != null) {
+
+    if (res.user != null) {
       if (!estaRegistrado) {
-        UserHelper.saveUser(user, rol: rol);
+        UserHelper.saveUser(res.user, rol: rol);
       }
     }
-    return user;
+    Future.delayed(
+      Duration(seconds: 2),
+      () {},
+    );
+
+    return res.user;
   }
 
   static signInWithGoogle() async {
@@ -62,7 +100,7 @@ class AuthHelper {
       final credential = GoogleAuthProvider.credential(
           accessToken: auth.accessToken, idToken: auth.idToken);
       final res = await _auth.signInWithCredential(credential);
-     
+
       if (res.user != null) {
         UserHelper.saveUser(res.user);
         return res.user;
@@ -82,13 +120,25 @@ class AuthHelper {
   static handleSignOut() async {
     return await FirebaseAuth.instance.signOut();
   }
+
+  Future<Funcionario> getUser() async {
+    List<Funcionario> listaUsuarios = [];
+    //Obtener el documento
+    final DocumentSnapshot userDocument = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser.email)
+        .get();
+
+    final Map<String, dynamic> data = userDocument.data();
+    return Funcionario.fromMap(data);
+  }
 }
 
 class UserHelper {
   static FirebaseFirestore _db = FirebaseFirestore.instance;
   static var _dbRT = FirebaseDatabase.instance.reference();
 
-  Future<List<Funcionario>> loadUser() async {
+  Future<List<Funcionario>> loadUser([String text = '']) async {
     CollectionReference productos =
         FirebaseFirestore.instance.collection('users');
     QuerySnapshot querySnapshot;
@@ -107,7 +157,24 @@ class UserHelper {
       },
     );
 
-    return funcionarioList;
+    if (text.length > 0 && funcionarioList.length > 0) {
+      List<Funcionario> funcionarioListcopy = [];
+      funcionarioList.forEach((element) {
+        if (element.nombre
+                .toString()
+                .toLowerCase()
+                .contains(text.toLowerCase()) ||
+            element.identificacion.toString().contains(text)) {
+          if (element != null) {
+            Logger().v(element.id);
+            funcionarioListcopy.add(element);
+          }
+        }
+      });
+      return funcionarioListcopy;
+    } else {
+      return funcionarioList;
+    }
   }
 
   Future<void> eliminarFuncionario(String email) async {
@@ -243,5 +310,16 @@ class UserHelper {
         "device_info": deviceData,
       });
     }
+  }
+}
+
+Future<String> traducir(String input) async {
+  try {
+    final translator = GoogleTranslator();
+    var translation = await translator.translate(input, from: 'en', to: 'es');
+    return translation.toString();
+  } catch (e) {
+    Logger().e('Error en el traductor: ' + e.message);
+    return "Ha ocurrido un error inesperado, revise su conexión a internet";
   }
 }

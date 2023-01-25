@@ -56,6 +56,9 @@ dependencies:
   from_css_color: ^2.0.0
   flutter_animate: ^3.0.0
   swipe_to: ^1.0.2
+  flutter_password_strength: ^0.1.6
+  translator: ^0.1.5
+  easy_debounce: ^2.0.3
  
   
 
@@ -85,7 +88,18 @@ flutter:
         - assets/
         - assets/image/
         - assets/images/
-        - assets/diseño_interfaz/
+        - assets/diseño_interfaz/MiMunicipio.jpeg
+        - assets/diseño_interfaz/bandera.png
+        - assets/diseño_interfaz/logoo.png
+        - assets/diseño_interfaz/escudocalcaldia.png
+        - assets/diseño_interfaz/User2.jpg
+        - assets/diseño_interfaz/Panoramica.jpg
+        - assets/diseño_interfaz/cultu.png
+        - assets/diseño_interfaz/MiAlcaldia.jpeg
+        - assets/images/banner.png
+        - assets/images/logoo.png
+        - assets/images/userImage.png
+        - assets/images/user2.jpg
         - assets/image_01.png
         - assets/image_02.png
         - assets/logoo.png

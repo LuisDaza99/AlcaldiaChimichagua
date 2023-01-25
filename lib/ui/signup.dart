@@ -1,12 +1,15 @@
 import 'package:alcaldia/utils/auth_helper.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-
+import 'package:logger/logger.dart';
+import 'package:translator/translator.dart';
 import '../CustomIcons.dart';
 import '../Widgets/SocialIcons.dart';
+import 'package:flutter_password_strength/flutter_password_strength.dart';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -17,6 +20,9 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController _emailController;
   TextEditingController _passwordController;
   TextEditingController _confirmPasswordController;
+  final _formKey = GlobalKey<FormState>();
+  String _password = '';
+  double fuerzaContrasenia = 0.0;
 
   @override
   void initState() {
@@ -86,7 +92,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   new Container(
                     width: double.infinity,
-                    height: ScreenUtil().setHeight(500),
+                    height: ScreenUtil().setHeight(480),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8.0),
@@ -100,90 +106,126 @@ class _SignupPageState extends State<SignupPage> {
                               offset: Offset(0.0, -10.0),
                               blurRadius: 10.0),
                         ]),
-                    child: Padding(
-                      padding:
-                          EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text("Crear Cuenta",
-                              style: TextStyle(
-                                  fontSize: ScreenUtil().setSp(45),
-                                  fontFamily: "Poppins-Bold",
-                                  letterSpacing: .6)),
-                          SizedBox(
-                            height: ScreenUtil().setHeight(30),
-                          ),
-                          Text("Correo",
-                              style: TextStyle(
-                                  fontFamily: "Poppins-Medium",
-                                  fontSize: ScreenUtil().setSp(26))),
-                          TextFormField(
-                            decoration: InputDecoration(
-                                hintText: "Email",
-                                hintStyle: TextStyle(
-                                    color: Colors.grey, fontSize: 12.0)),
-                            controller: _emailController,
-                            validator: (String value) {
-                              if (value.isEmpty)
-                                return 'Por favor, introduzca un texto';
-                              return null;
-                            },
-                          ),
-                          SizedBox(
-                            height: ScreenUtil().setHeight(30),
-                          ),
-                          Text("Contraseña",
-                              style: TextStyle(
-                                  fontFamily: "Poppins-Medium",
-                                  fontSize: ScreenUtil().setSp(26))),
-                          TextFormField(
-                            controller: _passwordController,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9]')),
-                            ],
-                            decoration: InputDecoration(
-                                hintText: "Password",
-                                hintStyle: TextStyle(
-                                    color: Colors.grey, fontSize: 12.0)),
-                            validator: (String value) {
-                              if (value.isEmpty)
-                                return 'Por favor ingrese algún texto o números';
-                              return null;
-                            },
-                            obscureText: true,
-                          ),
-                          TextFormField(
-                            controller: _confirmPasswordController,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9]')),
-                            ],
-                            decoration: InputDecoration(
-                                hintText: "Confirm password",
-                                hintStyle: TextStyle(
-                                    color: Colors.grey, fontSize: 12.0)),
-                            validator: (String value) {
-                              if (value.isEmpty)
-                                return 'Por favor ingrese algún texto o números';
-                              return null;
-                            },
-                            obscureText: true,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              Text(
-                                "¿Has olvidado tu contraseña?",
+                    child: Form(
+                      key: _formKey,
+                      child: Padding(
+                        padding:
+                            EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text("Crear Cuenta",
                                 style: TextStyle(
-                                    color: Colors.blue,
+                                    fontSize: ScreenUtil().setSp(45),
+                                    fontFamily: "Poppins-Bold",
+                                    letterSpacing: .6)),
+                            SizedBox(
+                              height: ScreenUtil().setHeight(30),
+                            ),
+                            Text("Correo",
+                                style: TextStyle(
                                     fontFamily: "Poppins-Medium",
-                                    fontSize: ScreenUtil().setSp(28)),
-                              )
-                            ],
-                          )
-                        ],
+                                    fontSize: ScreenUtil().setSp(30))),
+                            TextFormField(
+                              decoration: InputDecoration(
+                                  hintText: "Correo electrónico",
+                                  hintStyle: TextStyle(
+                                      color: Colors.grey, fontSize: 12.0)),
+                              controller: _emailController,
+
+                              // ignore: missing_return
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  return 'Por favor, ingrese un correo';
+                                }
+                                if (!RegExp(
+                                        r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                                    .hasMatch(value)) {
+                                  return 'Por favor ingrese un correo válido';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(
+                              height: ScreenUtil().setHeight(30),
+                            ),
+                            Text("Contraseña",
+                                style: TextStyle(
+                                    fontFamily: "Poppins-Medium",
+                                    fontSize: ScreenUtil().setSp(30))),
+                            Stack(
+                              children: [
+                                TextFormField(
+                                  controller: _passwordController,
+                                  decoration: InputDecoration(
+                                      hintText: "Contraseña",
+                                      hintStyle: TextStyle(
+                                          color: Colors.grey, fontSize: 12.0)),
+                                  validator: (String value) {
+                                    if (value.isEmpty)
+                                      return 'Por favor ingrese una contraseña';
+                                    if (value.length < 6)
+                                      return 'Por favor ingrese una contraseña de por lo menos 6 digítos';
+                                    return null;
+                                  },
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _password = value;
+                                    });
+                                  },
+                                  obscureText: true,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right:5.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    mainAxisSize: MainAxisSize.max,
+                                    children: [_contraseniaEsSegura(fuerzaContrasenia),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                   mainAxisAlignment: MainAxisAlignment.end,
+                                    mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 20, 5, 0),
+                                        child: FlutterPasswordStrength(
+                                          
+                                          backgroundColor:
+                                              Color.fromARGB(71, 158, 158, 158),
+                                          height: 15,
+                                          width: 130,
+                                          radius: 15,
+                                          password: _password,
+                                          strengthCallback: (strength) {
+                                             debugPrint(strength.toString());
+                                              fuerzaContrasenia = strength;
+                                           
+                                          },
+                                        )),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            TextFormField(
+                              controller: _confirmPasswordController,
+                              decoration: InputDecoration(
+                                  hintText: "Confirmar contraseña",
+                                  hintStyle: TextStyle(
+                                      color: Colors.grey, fontSize: 12.0)),
+                              validator: (String value) {
+                                if (value.isEmpty)
+                                  return 'Repita la contraseña';
+                                if (value != _password)
+                                  return 'Las contraseñas no coinciden';
+                                return null;
+                              },
+                              obscureText: true,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -221,27 +263,43 @@ class _SignupPageState extends State<SignupPage> {
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () async {
-                                if (_emailController.text.isEmpty ||
-                                    _passwordController.text.isEmpty) {
-                                  print("Email and password cannot be empty");
-                                  return;
-                                }
-                                if (_confirmPasswordController.text.isEmpty ||
-                                    _passwordController.text !=
-                                        _confirmPasswordController.text) {
-                                  print("confirm password does not match");
-                                  return;
-                                }
-                                try {
-                                  final user = await AuthHelper.signupWithEmail(
-                                      email: _emailController.text,
-                                      password: _passwordController.text);
-                                  if (user != null) {
-                                    print("Usuario Creado");
-                                    Navigator.pop(context);
+                                if (_formKey.currentState.validate()) {
+                                  try {
+                                    final user =
+                                        await AuthHelper.signupWithEmail(
+                                            email: _emailController.text,
+                                            password: _passwordController.text,
+                                            context: context);
+                                    if (user != null &&
+                                        !(user
+                                            .toString()
+                                            .contains('registrado'))) {
+                                      Logger().i(user);
+                                      Get.snackbar('Registro Exitoso',
+                                          'Ha sido registrado de manera exitosa, por favor inicie sesión a continuación');
+                                      print("Usuario Creado");
+                                      Navigator.pop(context);
+                                    } else {
+                                      Get.snackbar('Error', user.toString(),
+                                          icon: Icon(
+                                            Icons.error_outline,
+                                            color: Colors.red,
+                                          ),
+                                          colorText:
+                                              Color.fromARGB(255, 114, 14, 7));
+                                    }
+                                  } on FirebaseException catch (e) {
+                                    var errorTraducido =
+                                        await traducir(e.message);
+                                    Get.snackbar('Error', errorTraducido,
+                                        icon: Icon(
+                                          Icons.error_outline,
+                                          color: Colors.red,
+                                        ),
+                                        colorText:
+                                            Color.fromARGB(255, 114, 14, 7));
+                                    print(e);
                                   }
-                                } catch (e) {
-                                  print(e);
                                 }
                               },
                               child: Center(
@@ -276,16 +334,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SocialIcon(
-                        colors: [
-                          Color(0xFF102397),
-                          Color(0xFF187adf),
-                          Color(0xFF00eaf8),
-                        ],
-                        iconData: CustomIcons.facebook,
-                        onPressed: () {},
-                      ),
+                    children: [
                       SocialIcon(
                         colors: [
                           Color(0xFFff4f38),
@@ -300,22 +349,6 @@ class _SignupPageState extends State<SignupPage> {
                           }
                         },
                       ),
-                      SocialIcon(
-                        colors: [
-                          Color(0xFF17ead9),
-                          Color(0xFF6078ea),
-                        ],
-                        iconData: CustomIcons.twitter,
-                        onPressed: () {},
-                      ),
-                      SocialIcon(
-                        colors: [
-                          Color(0xFF00c6fb),
-                          Color(0xFF005bea),
-                        ],
-                        iconData: CustomIcons.linkedin,
-                        onPressed: () {},
-                      )
                     ],
                   ),
                   SizedBox(
@@ -325,6 +358,7 @@ class _SignupPageState extends State<SignupPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       InkWell(
+                        borderRadius: BorderRadius.circular(60),
                         onTap: () {
                           Get.toNamed("/home");
                         },
@@ -333,7 +367,7 @@ class _SignupPageState extends State<SignupPage> {
                             Get.toNamed("/home");
                           },
                           color: Colors.blue,
-                          child: Icon(Icons.logout),
+                          child: Icon(Icons.arrow_back),
                           textColor: Colors.white,
                         ),
                       )
@@ -347,5 +381,50 @@ class _SignupPageState extends State<SignupPage> {
       ),
     );
     throw UnimplementedError();
+  }
+
+  Widget _contraseniaEsSegura(double valor) {
+    if (valor > 0.0 && valor <= 0.25) {
+      return Text("Insegura",
+          style: TextStyle(
+              color: Colors.red,
+              fontFamily: "Poppins-Medium",
+              fontSize: ScreenUtil().setSp(10)));
+    } else if (valor > 0.25 && valor <= 0.5) {
+      return Text("Poco Segura",
+          style: TextStyle(
+              color: Color.fromARGB(255, 163, 151, 39),
+              fontFamily: "Poppins-Medium",
+              fontSize: ScreenUtil().setSp(10)));
+    } else if (valor > 0.5 && valor <= 0.75) {
+      return Text("Segura",
+          style: TextStyle(
+              color: Colors.blue,
+              fontFamily: "Poppins-Medium",
+              fontSize: ScreenUtil().setSp(10)));
+    } else if (valor > 0.75 && valor <= 1) {
+      return Text("Muy segura",
+          style: TextStyle(
+              color: Color.fromARGB(255, 31, 153, 35),
+              fontFamily: "Poppins-Medium",
+              fontSize: ScreenUtil().setSp(10)));
+    } else {
+      return Text("",
+          style: TextStyle(
+              color: Colors.transparent,
+              fontFamily: "Poppins-Medium",
+              fontSize: ScreenUtil().setSp(10)));
+    }
+  }
+
+  Future<String> traducir(String input) async {
+    try {
+      final translator = GoogleTranslator();
+      var translation = await translator.translate(input, from: 'en', to: 'es');
+      return translation.toString();
+    } catch (e) {
+      Logger().e('Error en el traductor: ' + e.message);
+      return "Ha ocurrido un error inesperado, revise su conexión a internet";
+    }
   }
 }

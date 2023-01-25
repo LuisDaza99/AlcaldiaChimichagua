@@ -30,28 +30,28 @@ abstract class FlutterFlowTheme {
         : LightModeTheme();
   }
 
-   Color primaryColor;
-   Color secondaryColor;
-   Color tertiaryColor;
+  Color primaryColor;
+  Color secondaryColor;
+  Color tertiaryColor;
   Color alternate;
-   Color primaryBackground;
+  Color primaryBackground;
   Color secondaryBackground;
   Color primaryText;
-   Color secondaryText;
+  Color secondaryText;
 
-   Color primaryBtnText;
-   Color lineColor;
-   Color grayIcon;
-   Color gray200;
+  Color primaryBtnText;
+  Color lineColor;
+  Color grayIcon;
+  Color gray200;
   Color gray600;
-   Color black600;
-   Color tertiary400;
-   Color textColor;
+  Color black600;
+  Color tertiary400;
+  Color textColor;
   Color maximumBlueGreen;
-   Color plumpPurple;
-   Color platinum;
-   Color ashGray;
-   Color darkSeaGreen;
+  Color plumpPurple;
+  Color platinum;
+  Color ashGray;
+  Color darkSeaGreen;
 
   String get title1Family => typography.title1Family;
   TextStyle get title1 => typography.title1;
@@ -72,28 +72,28 @@ abstract class FlutterFlowTheme {
 }
 
 class LightModeTheme extends FlutterFlowTheme {
-  Color primaryColor = const Color(0xFF4B39EF);
-   Color secondaryColor = const Color(0xFF39D2C0);
-   Color tertiaryColor = const Color(0xFFEE8B60);
-   Color alternate = const Color(0xFFFF5963);
-   Color primaryBackground = const Color(0xFFF1F4F8);
-   Color secondaryBackground = const Color(0xFFFFFFFF);
-   Color primaryText = const Color(0xFF101213);
+  Color primaryColor = const Color.fromARGB(255, 25, 116, 28);
+  Color secondaryColor = const Color(0xFF39D2C0);
+  Color tertiaryColor = const Color(0xFFEE8B60);
+  Color alternate = const Color(0xFFFF5963);
+  Color primaryBackground = const Color(0xFFF1F4F8);
+  Color secondaryBackground = const Color(0xFFFFFFFF);
+  Color primaryText = const Color(0xFF101213);
   Color secondaryText = const Color(0xFF57636C);
 
   Color primaryBtnText = Color(0xFFFFFFFF);
-   Color lineColor = Color(0xFFE0E3E7);
-   Color grayIcon = Color(0xFF95A1AC);
-   Color gray200 = Color(0xFFDBE2E7);
-   Color gray600 = Color(0xFF262D34);
-   Color black600 = Color(0xFF090F13);
-   Color tertiary400 = Color(0xFF39D2C0);
+  Color lineColor = Color(0xFFE0E3E7);
+  Color grayIcon = Color(0xFF95A1AC);
+  Color gray200 = Color(0xFFDBE2E7);
+  Color gray600 = Color(0xFF262D34);
+  Color black600 = Color(0xFF090F13);
+  Color tertiary400 = Color(0xFF39D2C0);
   Color textColor = Color(0xFF1E2429);
-   Color maximumBlueGreen = Color(0xFF59C3C3);
+  Color maximumBlueGreen = Color(0xFF59C3C3);
   Color plumpPurple = Color(0xFF52489C);
-   Color platinum = Color(0xFFEBEBEB);
-   Color ashGray = Color(0xFFCAD2C5);
- Color darkSeaGreen = Color(0xFF84A98C);
+  Color platinum = Color(0xFFEBEBEB);
+  Color ashGray = Color(0xFFCAD2C5);
+  Color darkSeaGreen = Color(0xFF84A98C);
 }
 
 abstract class Typography {
@@ -170,28 +170,28 @@ class ThemeTypography extends Typography {
 }
 
 class DarkModeTheme extends FlutterFlowTheme {
-   Color primaryColor = const Color(0xFF4B39EF);
+  Color primaryColor = const Color.fromARGB(255, 25, 116, 28);
   Color secondaryColor = const Color(0xFF39D2C0);
-   Color tertiaryColor = const Color(0xFFEE8B60);
+  Color tertiaryColor = const Color(0xFFEE8B60);
   Color alternate = const Color(0xFFFF5963);
-   Color primaryBackground = const Color(0xFF1A1F24);
-   Color secondaryBackground = const Color(0xFF101213);
-   Color primaryText = const Color(0xFFFFFFFF);
-   Color secondaryText = const Color(0xFF95A1AC);
+  Color primaryBackground = const Color(0xFF1A1F24);
+  Color secondaryBackground = const Color(0xFF101213);
+  Color primaryText = const Color(0xFFFFFFFF);
+  Color secondaryText = const Color(0xFF95A1AC);
 
-   Color primaryBtnText = Color(0xFFFFFFFF);
-   Color lineColor = Color(0xFF22282F);
+  Color primaryBtnText = Color(0xFFFFFFFF);
+  Color lineColor = Color(0xFF22282F);
   Color grayIcon = Color(0xFF95A1AC);
-   Color gray200 = Color(0xFFDBE2E7);
-   Color gray600 = Color(0xFF262D34);
-   Color black600 = Color(0xFF090F13);
-   Color tertiary400 = Color(0xFF39D2C0);
+  Color gray200 = Color(0xFFDBE2E7);
+  Color gray600 = Color(0xFF262D34);
+  Color black600 = Color(0xFF090F13);
+  Color tertiary400 = Color(0xFF39D2C0);
   Color textColor = Color(0xFF1E2429);
-   Color maximumBlueGreen = Color(0xFF59C3C3);
-   Color plumpPurple = Color(0xFF52489C);
-   Color platinum = Color(0xFFEBEBEB);
+  Color maximumBlueGreen = Color(0xFF59C3C3);
+  Color plumpPurple = Color(0xFF52489C);
+  Color platinum = Color(0xFFEBEBEB);
   Color ashGray = Color(0xFFCAD2C5);
-   Color darkSeaGreen = Color(0xFF84A98C);
+  Color darkSeaGreen = Color(0xFF84A98C);
 }
 
 extension TextStyleHelper on TextStyle {

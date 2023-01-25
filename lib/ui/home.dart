@@ -1,13 +1,16 @@
+import 'package:alcaldia/model/funcionario.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:logger/logger.dart';
 
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import '../utils/auth_helper.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,6 +21,12 @@ class HomePage extends StatefulWidget {
 class _HomePageStateState extends State<HomePage> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   UserCredential userCredential;
+  User _user;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,56 +46,131 @@ class _HomePageStateState extends State<HomePage> {
               image: DecorationImage(
                 fit: BoxFit.fitWidth,
                 image: Image.asset(
-                  'assets/images/bballHero@2x.png',
+                  'assets/images/banner.png',
                 ).image,
               ),
             ),
-            child: Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(24, 0, 0, 0),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(0, 50, 0, 0),
-                        child: Card(
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          color: FlutterFlowTheme.of(context).primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(70),
-                          ),
-                          child: Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(2, 2, 2, 2),
-                            child: Container(
-                              width: 76,
-                              height: 76,
-                              clipBehavior: Clip.antiAlias,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                              ),
-                              child: Image.network(
-                                'https://images.unsplash.com/photo-1596831440741-238efd4619cc?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTQ1fHxiYXNrZXRiYWxsJTIwcGxheWVyfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-                                fit: BoxFit.fitHeight,
+            child: FutureBuilder<Funcionario>(
+              future: AuthHelper(). getUser(),
+              builder: (BuildContext context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.hasData) {
+                  return Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(24, 0, 0, 0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(0, 50, 0, 0),
+                              child: Card(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                color:
+                                    FlutterFlowTheme.of(context).primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(70),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      2, 2, 2, 2),
+                                  child: Container(
+                                    width: 76,
+                                    height: 76,
+                                    clipBehavior: Clip.antiAlias,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: (snapshot.data.funcionarioImage!=null||FirebaseAuth.instance.currentUser.photoURL!=null) ? Image.network(
+                                      (snapshot.data.funcionarioImage.isNotEmpty) ? snapshot.data.funcionarioImage:FirebaseAuth.instance.currentUser.photoURL.isNotEmpty,
+                                      fit: BoxFit.fitHeight,
+                                    ) :Image.asset(
+                                      'assets/diseño_interfaz/User2.jpg',
+                                      fit: BoxFit.fitHeight,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(0, 8, 0, 0),
-                      
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(5, 8, 0, 0),
+                                child: Text((snapshot.data.nombre!=null) ? snapshot.data.nombre : snapshot.data.email,
+                                    style: FlutterFlowTheme.of(context).title1.override(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryColor,
+                                        fontFamily: "Poppins",
+                                        fontSize: 30))),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(24, 0, 0, 0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Padding(
+                              padding:
+                                  EdgeInsetsDirectional.fromSTEB(0, 50, 0, 0),
+                              child: Card(
+                                clipBehavior: Clip.antiAliasWithSaveLayer,
+                                color:
+                                    FlutterFlowTheme.of(context).primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(70),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      2, 2, 2, 2),
+                                  child: Container(
+                                    width: 76,
+                                    height: 76,
+                                    clipBehavior: Clip.antiAlias,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Image.asset(
+                                      'assets/diseño_interfaz/User2.jpg',
+                                      fit: BoxFit.fitHeight,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(0, 8, 0, 0),
+                                child: Text("",
+                                    style: TextStyle(
+                                        color: FlutterFlowTheme.of(context)
+                                            .textColor,
+                                        fontFamily: "Poppins-Medium",
+                                        fontSize: 30))),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
             ),
           ),
           Column(
@@ -98,7 +182,7 @@ class _HomePageStateState extends State<HomePage> {
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(24, 12, 0, 12),
                     child: Text(
-                      'Account Settings',
+                      'Configuración',
                       style: FlutterFlowTheme.of(context).bodyText1.override(
                             fontFamily: 'Lexend Deca',
                             color: Color(0xFF090F13),
@@ -143,7 +227,7 @@ class _HomePageStateState extends State<HomePage> {
                                 padding:
                                     EdgeInsetsDirectional.fromSTEB(24, 0, 0, 0),
                                 child: Text(
-                                  'Reset Password',
+                                  'Cambiar Contraseña',
                                   style: FlutterFlowTheme.of(context)
                                       .bodyText1
                                       .override(
@@ -182,9 +266,9 @@ class _HomePageStateState extends State<HomePage> {
                           AuthHelper.logOut();
                           Get.toNamed("/loginpage");
                         },
-                        text: 'Log Out',
+                        text: 'Cerrar Sesión',
                         options: FFButtonOptions(
-                          width: 90,
+                          width: 120,
                           height: 40,
                           color: Colors.white,
                           textStyle: FlutterFlowTheme.of(context)
@@ -214,4 +298,6 @@ class _HomePageStateState extends State<HomePage> {
       ),
     );
   }
+
+  
 }

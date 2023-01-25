@@ -19,22 +19,13 @@ class HomePageStateProvider extends ChangeNotifier
     'Portafolio de servicios'
   ];
 
-  Future<List<DependenciaModel>> getFeaturedDependencias() async {
-    return await api.getFeaturedDependencias();    
+  Future<List<DependenciaModel>> getFeaturedDependencias([String text='']) async {
+    return await api.getFeaturedDependencias(text);    
   }
 
-  Future<List<DependenciaModel>> getAllDependencias() async {
-    return await api.getAllDependencias();    
+  Future<List<DependenciaModel>> getAllDependencias([String text='']) async {
+    return await api.getAllDependencias(text);    
   }
 
-  Future<void> GetTopList() async {
-
-      await Future.delayed(const Duration(milliseconds: 500), (){});
-
-      kTopListLink.add("India");
-
-      notifyListeners();
-      
-  }
 
 }
